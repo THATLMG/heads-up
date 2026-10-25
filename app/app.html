@@ -524,7 +524,7 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 </div>
 
 <script>
-const APP_VERSION = 13;   // keep in step with app/version.json in the GitHub repo
+const APP_VERSION = 14;   // keep in step with app/version.json in the GitHub repo
 const SEARCH_ENGINES = {
   google: { name: "Google", url: "https://www.google.com/search?q=" },
   bing: { name: "Bing", url: "https://www.bing.com/search?q=" },
@@ -533,6 +533,8 @@ const SEARCH_ENGINES = {
 };
 // Newest first. Add an entry here with every release; it feeds the patch notes and the bell.
 const CHANGELOG = [
+  { v: 14, date: "2026-10-25", title: "Gmail linking help", notes: [
+    "If Gmail turns down a link, Heads Up now shows Gmail's own reason and what to do about it." ] },
   { v: 13, date: "2026-10-25", title: "Easier Gmail linking", notes: [
     "Linking Gmail ignores spaces and invisible characters that come along when you copy the app password.",
     "Clearer steps and error messages, including what to check when you use more than one Google account." ] },

@@ -1,5 +1,5 @@
 {
-  "version": 13,
-  "notes": "Linking Gmail is more forgiving with copy-and-paste, with clearer steps.",
+  "version": 14,
+  "notes": "If Gmail turns down a link, Heads Up now shows Gmail's own reason and what to do.",
   "files": ["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]
 }

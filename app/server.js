@@ -360,8 +360,14 @@ function decodeWords(s) {
 const fromName = (f) => { const m = String(f || "").match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>/); return m ? m[1].trim() || m[2] : String(f || ""); };
 function imapError(e) {
   const msg = String(e?.message || e);
-  if (/AUTHENTICATIONFAILED|Invalid credentials|Application-specific password/i.test(msg))
-    return "Google didn't accept that email and app password together. Make sure the app password was made in the same Google account as this Gmail address (check the account in the top-right corner of the App passwords page), and that you pasted the 16-letter app password, not your normal password.";
+  // Gmail's own reason, e.g. "NO [AUTHENTICATIONFAILED] Invalid credentials (Failure)". It never contains the password.
+  const said = " (Gmail said: " + msg.replace(/https?:\/\/\S+/g, "").replace(/\s+/g, " ").trim().slice(0, 140) + ")";
+  if (/WEBALERT|Web login required|log in via your web browser/i.test(msg))
+    return "Google wants you to confirm this sign-in in a browser first. Sign in to Gmail in your browser, open https://accounts.google.com/DisplayUnlockCaptcha and press Continue, then try again within 10 minutes." + said;
+  if (/Application-specific password required/i.test(msg))
+    return "That looks like your normal Google password. Paste the 16-letter app password from the App passwords page instead." + said;
+  if (/AUTHENTICATIONFAILED|Invalid credentials/i.test(msg))
+    return "Google didn't accept that email and app password together. Make sure the app password was made in the same Google account as this Gmail address (check the account in the top-right corner of the App passwords page), and that you pasted the 16-letter app password, not your normal password." + said;
   if (/IMAP access|disabled/i.test(msg)) return "Gmail has IMAP turned off for this account. Turn it on in Gmail's settings (Forwarding and POP/IMAP), then try again.";
   if (/timeout|ENOTFOUND|ECONNREFUSED|ECONNRESET|EAI_AGAIN|closed/i.test(msg)) return "Couldn't reach Gmail. Check your internet connection and try again.";
   if (/protect the password/.test(msg)) return "Windows couldn't unlock the saved app password. Unlink Gmail and link it again.";
