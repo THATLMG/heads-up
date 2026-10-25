@@ -1,5 +1,5 @@
 {
-  "version": 12,
-  "notes": "New: link your Gmail, deals on tech, laptops and Steam games, a real Tech topic, and a smoother Customize.",
+  "version": 13,
+  "notes": "Linking Gmail is more forgiving with copy-and-paste, with clearer steps.",
   "files": ["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]
 }

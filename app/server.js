@@ -214,7 +214,9 @@ async function accountApi(req, res, route, body) {
   if (!s) return json(res, 401, { error: "You've been signed out. Sign in again." });
   if (route === "me") return json(res, 200, { user: publicUser(s.u) });
   if (route === "gmail-link") {
-    const email = String(body.email || "").trim(), pass = String(body.appPassword || "").replace(/\s+/g, "");
+    // App passwords are 16 letters; drop anything else that came along with a copy and paste
+    // (spaces, line breaks, invisible characters).
+    const email = String(body.email || "").trim().replace(/[​-‍﻿]/g, ""), pass = String(body.appPassword || "").replace(/[^A-Za-z0-9]/g, "");
     if (!/^[^@\s"\\]+@[^@\s"\\]+\.[^@\s"\\]+$/.test(email) || email.length > 120) return json(res, 400, { error: "Enter your full Gmail address." });
     if (pass.length < 8 || pass.length > 64) return json(res, 400, { error: "Paste the 16-letter app password Google gave you." });
     let inbox;
@@ -359,7 +361,7 @@ const fromName = (f) => { const m = String(f || "").match(/^\s*"?([^"<]*?)"?\s*<
 function imapError(e) {
   const msg = String(e?.message || e);
   if (/AUTHENTICATIONFAILED|Invalid credentials|Application-specific password/i.test(msg))
-    return "Google didn't accept that email and app password. Check both, and make sure it's an app password, not your normal Google password.";
+    return "Google didn't accept that email and app password together. Make sure the app password was made in the same Google account as this Gmail address (check the account in the top-right corner of the App passwords page), and that you pasted the 16-letter app password, not your normal password.";
   if (/IMAP access|disabled/i.test(msg)) return "Gmail has IMAP turned off for this account. Turn it on in Gmail's settings (Forwarding and POP/IMAP), then try again.";
   if (/timeout|ENOTFOUND|ECONNREFUSED|ECONNRESET|EAI_AGAIN|closed/i.test(msg)) return "Couldn't reach Gmail. Check your internet connection and try again.";
   if (/protect the password/.test(msg)) return "Windows couldn't unlock the saved app password. Unlink Gmail and link it again.";

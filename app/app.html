@@ -524,7 +524,7 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 </div>
 
 <script>
-const APP_VERSION = 12;   // keep in step with app/version.json in the GitHub repo
+const APP_VERSION = 13;   // keep in step with app/version.json in the GitHub repo
 const SEARCH_ENGINES = {
   google: { name: "Google", url: "https://www.google.com/search?q=" },
   bing: { name: "Bing", url: "https://www.bing.com/search?q=" },
@@ -533,6 +533,9 @@ const SEARCH_ENGINES = {
 };
 // Newest first. Add an entry here with every release; it feeds the patch notes and the bell.
 const CHANGELOG = [
+  { v: 13, date: "2026-10-25", title: "Easier Gmail linking", notes: [
+    "Linking Gmail ignores spaces and invisible characters that come along when you copy the app password.",
+    "Clearer steps and error messages, including what to check when you use more than one Google account." ] },
   { v: 12, date: "2026-10-25", title: "Smoother Customize", notes: [
     "Customize keeps its place when you flip a switch or move a section, instead of jumping back to the top." ] },
   { v: 11, date: "2026-10-25", title: "Gmail, deals and better topics", notes: [
@@ -1318,8 +1321,9 @@ function openGmailLink() {
   const form = el("form", { class: "modal-body", novalidate: true },
     el("p", { text: "Google lets apps read Gmail with an app password: a separate 16-letter password just for Heads Up. Making one takes about a minute." }),
     el("ol", { style: "margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px" },
-      step(1, ["Turn on ", el("a", { href: "https://myaccount.google.com/signinoptions/twosv", target: "_blank", rel: "noopener", text: "2-Step Verification ↗" }), " for your Google account, if it isn't on already."]),
-      step(2, ["Open ", el("a", { href: "https://myaccount.google.com/apppasswords", target: "_blank", rel: "noopener", text: "App passwords ↗" }), ", name it ", el("b", { text: "Heads Up" }), ", and press Create."]),
+      step(1, ["Turn on ", el("a", { href: "https://myaccount.google.com/signinoptions/twosv", target: "_blank", rel: "noopener", text: "2-Step Verification ↗" }), " for your Google account, if it isn't on already. Google hides app passwords until it's on."]),
+      step(2, ["Open ", el("a", { href: "https://myaccount.google.com/apppasswords", target: "_blank", rel: "noopener", text: "App passwords ↗" }), ", name it ", el("b", { text: "Heads Up" }), ", and press Create. ",
+        el("b", { text: "Check the account in the top-right corner" }), " is the same Gmail you'll type below: if you use more than one Google account, this page opens in your first one."]),
       step(3, ["Copy the 16-letter password Google shows you and paste it below."])),
     field("gmEmail", "Gmail address", { type: "email", autocomplete: "email", maxlength: 120, placeholder: "you@gmail.com" }),
     field("gmPass", "App password", { type: "password", autocomplete: "off", maxlength: 64, placeholder: "xxxx xxxx xxxx xxxx", spellcheck: "false" },
