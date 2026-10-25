@@ -7,11 +7,12 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const crypto = require("crypto");
+const tls = require("tls");
 const { execFile, spawn } = require("child_process");
 
 const PORT = +process.env.HEADSUP_PORT || 5178;
 const HOST = "127.0.0.1";
-const ALLOWED_HOSTS = new Set(["news.google.com", "store.steampowered.com", "www.hltv.org", "wttr.in"]);
+const ALLOWED_HOSTS = new Set(["news.google.com", "store.steampowered.com", "www.hltv.org", "wttr.in", "9to5toys.com", "slickdeals.net"]);
 const IDLE_EXIT_MS = 20 * 60 * 1000;   // the open app checks in every 4 minutes; quit once it's closed
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
 
@@ -132,7 +133,7 @@ function makeRecoveryCode() {
 const normCode = (c) => String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/(.{4})(?=.)/g, "$1-");
 const userKey = (u) => String(u || "").trim().toLowerCase();
 const tokenKey = (t) => crypto.createHash("sha256").update(String(t)).digest("hex");
-const publicUser = (u) => ({ username: u.username, createdAt: u.createdAt, settings: u.settings || {}, updatedAt: u.updatedAt || 0 });
+const publicUser = (u) => ({ username: u.username, createdAt: u.createdAt, settings: u.settings || {}, updatedAt: u.updatedAt || 0, gmail: u.gmail?.email || null });
 
 function newSession(key) {
   const t = crypto.randomBytes(32).toString("hex");
@@ -212,6 +213,36 @@ async function accountApi(req, res, route, body) {
   const s = sessionUser(req);
   if (!s) return json(res, 401, { error: "You've been signed out. Sign in again." });
   if (route === "me") return json(res, 200, { user: publicUser(s.u) });
+  if (route === "gmail-link") {
+    const email = String(body.email || "").trim(), pass = String(body.appPassword || "").replace(/\s+/g, "");
+    if (!/^[^@\s"\\]+@[^@\s"\\]+\.[^@\s"\\]+$/.test(email) || email.length > 120) return json(res, 400, { error: "Enter your full Gmail address." });
+    if (pass.length < 8 || pass.length > 64) return json(res, 400, { error: "Paste the 16-letter app password Google gave you." });
+    let inbox;
+    try { inbox = await readInbox(email, pass); } catch (e) { return json(res, 400, { error: imapError(e) }); }
+    s.u.gmail = { email, secret: await dpapi("protect", pass), linkedAt: Date.now() };
+    gmailCache.delete(s.key);
+    await saveDb();
+    return json(res, 200, { linked: true, email, ...inbox, fetchedAt: Date.now() });
+  }
+  if (route === "gmail-unlink") {
+    delete s.u.gmail;
+    gmailCache.delete(s.key);
+    await saveDb();
+    return json(res, 200, { linked: false });
+  }
+  if (route === "gmail") {
+    if (!s.u.gmail) return json(res, 200, { linked: false });
+    const c = gmailCache.get(s.key);
+    if (c && Date.now() - c.at < 60000) return json(res, 200, c.data);
+    try {
+      const inbox = await readInbox(s.u.gmail.email, await dpapi("unprotect", s.u.gmail.secret));
+      const data = { linked: true, email: s.u.gmail.email, ...inbox, fetchedAt: Date.now() };
+      gmailCache.set(s.key, { at: Date.now(), data });
+      return json(res, 200, data);
+    } catch (e) {
+      return json(res, 200, { linked: true, email: s.u.gmail.email, error: imapError(e) });
+    }
+  }
   if (route === "settings") {
     const text = JSON.stringify(body.settings ?? {});
     if (text.length > 200000) return json(res, 413, { error: "Those settings are too big to save." });
@@ -229,6 +260,110 @@ async function accountApi(req, res, route, body) {
     return json(res, 200, { ok: true });
   }
   return json(res, 404, { error: "Not found" });
+}
+
+// ---------- Gmail (read-only, with a Google app password) ----------
+const IMAP_HOST = process.env.HEADSUP_IMAP_HOST || "imap.gmail.com";
+const IMAP_PORT = +process.env.HEADSUP_IMAP_PORT || 993;
+const gmailCache = new Map();   // account -> {at, data}, so several refreshes in a minute make one Gmail call
+
+// The app password is encrypted with Windows' own per-user protection (DPAPI) before it's saved.
+// It travels to PowerShell on stdin, never on a command line.
+function dpapi(op, input) {
+  const script = "Add-Type -AssemblyName System.Security; $t = [Console]::In.ReadToEnd().Trim(); " + (op === "protect"
+    ? "[Convert]::ToBase64String([Security.Cryptography.ProtectedData]::Protect([Text.Encoding]::UTF8.GetBytes($t), $null, 'CurrentUser'))"
+    : "[Text.Encoding]::UTF8.GetString([Security.Cryptography.ProtectedData]::Unprotect([Convert]::FromBase64String($t), $null, 'CurrentUser'))");
+  return new Promise((res, rej) => {
+    const p = execFile("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", script], { windowsHide: true, timeout: 20000 },
+      (e, out) => (e ? rej(new Error("Windows couldn't protect the password")) : res(out.trim())));
+    p.stdin.end(input);
+  });
+}
+
+// Just enough IMAP to count unread mail and read the newest senders and subjects. The inbox is opened
+// with EXAMINE (read-only) and headers are fetched with BODY.PEEK, so nothing is ever marked as read.
+function imapConnect() {
+  return new Promise((resolve, reject) => {
+    const sock = tls.connect({ host: IMAP_HOST, port: IMAP_PORT, servername: IMAP_HOST, rejectUnauthorized: !process.env.HEADSUP_IMAP_INSECURE });
+    let buf = Buffer.alloc(0), waiting = null, n = 0;
+    const timer = setTimeout(() => fail(new Error("timeout")), 20000);
+    const fail = (e) => { clearTimeout(timer); sock.destroy(); if (waiting) { const w = waiting; waiting = null; w.rej(e); } };
+    function check() {
+      if (!waiting) return;
+      const text = buf.toString("latin1");
+      const m = text.match(waiting.tag ? new RegExp("^" + waiting.tag + " (OK|NO|BAD)[^\\r\\n]*\\r\\n", "m") : /^\* (OK|BYE|NO)[^\r\n]*\r\n/m);
+      if (!m) return;
+      const end = m.index + m[0].length, out = buf.subarray(0, end), w = waiting;
+      buf = buf.subarray(end); waiting = null;
+      m[1] === "OK" ? w.res(out) : w.rej(new Error(m[0].trim().replace(/^HU\d+ /, "")));
+    }
+    const cmd = (line) => new Promise((res, rej) => { const tag = "HU" + ++n; waiting = { tag, res, rej }; sock.write(tag + " " + line + "\r\n"); check(); });
+    sock.on("data", (d) => { buf = Buffer.concat([buf, d]); check(); });
+    sock.on("error", fail);
+    sock.on("close", () => fail(new Error("connection closed")));
+    waiting = { tag: null, res: () => resolve({ cmd, close: () => { clearTimeout(timer); sock.end(); } }), rej: reject };
+  });
+}
+const imapQuote = (s) => '"' + String(s).replace(/[\\"]/g, "\\$&") + '"';
+async function readInbox(email, pass, max = 6) {
+  const s = await imapConnect();
+  try {
+    await s.cmd("LOGIN " + imapQuote(email) + " " + imapQuote(pass));
+    await s.cmd("EXAMINE INBOX");
+    let found;
+    try { found = await s.cmd("SEARCH X-GM-RAW " + imapQuote("category:primary is:unread")); }   // Gmail's Primary tab
+    catch { found = await s.cmd("SEARCH UNSEEN"); }
+    const ids = (((found.toString("latin1").match(/^\* SEARCH([^\r\n]*)/m) || [])[1]) || "").trim().split(/\s+/).filter(Boolean).map(Number).sort((a, b) => b - a);
+    const items = ids.length ? parseFetch(await s.cmd("FETCH " + ids.slice(0, max).join(",") + " (X-GM-MSGID BODY.PEEK[HEADER.FIELDS (FROM SUBJECT DATE)])")) : [];
+    s.cmd("LOGOUT").catch(() => {});
+    return { total: ids.length, items: items.sort((a, b) => (b.date || "").localeCompare(a.date || "")) };
+  } finally {
+    setTimeout(() => s.close(), 200);
+  }
+}
+function parseFetch(buf) {
+  const text = buf.toString("latin1"), out = [], re = /\* \d+ FETCH \(/g;
+  let m;
+  while ((m = re.exec(text))) {
+    const lit = /\{(\d+)\}\r\n/g;
+    lit.lastIndex = m.index;
+    const l = lit.exec(text);
+    if (!l) break;
+    const start = l.index + l[0].length, len = +l[1];
+    const h = parseHeaders(buf.subarray(start, start + len).toString("utf8"));
+    const idm = (text.slice(m.index, l.index) + text.slice(start + len, start + len + 120)).match(/X-GM-MSGID (\d+)/);
+    const d = new Date(h.date || "");
+    out.push({ title: h.subject || "(no subject)", source: fromName(h.from), date: isNaN(d) ? "" : d.toISOString(),
+      link: idm ? "https://mail.google.com/mail/u/0/#inbox/" + BigInt(idm[1]).toString(16) : "https://mail.google.com/" });
+    re.lastIndex = start + len;
+  }
+  return out;
+}
+function parseHeaders(raw) {
+  const h = {};
+  for (const line of raw.replace(/\r\n[ \t]+/g, " ").split(/\r\n/)) {
+    const i = line.indexOf(":");
+    if (i > 0) h[line.slice(0, i).trim().toLowerCase()] = decodeWords(line.slice(i + 1).trim());
+  }
+  return h;
+}
+// Subjects and names like =?UTF-8?B?...?= (encoded so emoji and accents survive email).
+function decodeWords(s) {
+  return s.replace(/=\?([^?]+)\?([BbQq])\?([^?]*)\?=(\s+(?==\?))?/g, (_, cs, enc, data) => {
+    const bytes = enc.toUpperCase() === "B" ? Buffer.from(data, "base64")
+      : Buffer.from(data.replace(/_/g, " ").replace(/=([0-9A-Fa-f]{2})/g, (x, hex) => String.fromCharCode(parseInt(hex, 16))), "latin1");
+    try { return new TextDecoder(cs.toLowerCase()).decode(bytes); } catch { return bytes.toString("utf8"); }
+  });
+}
+const fromName = (f) => { const m = String(f || "").match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>/); return m ? m[1].trim() || m[2] : String(f || ""); };
+function imapError(e) {
+  const msg = String(e?.message || e);
+  if (/AUTHENTICATIONFAILED|Invalid credentials|Application-specific password/i.test(msg))
+    return "Google didn't accept that email and app password. Check both, and make sure it's an app password, not your normal Google password.";
+  if (/IMAP access|disabled/i.test(msg)) return "Gmail has IMAP turned off for this account. Turn it on in Gmail's settings (Forwarding and POP/IMAP), then try again.";
+  if (/timeout|ENOTFOUND|ECONNREFUSED|ECONNRESET|EAI_AGAIN|closed/i.test(msg)) return "Couldn't reach Gmail. Check your internet connection and try again.";
+  if (/protect the password/.test(msg)) return "Windows couldn't unlock the saved app password. Unlink Gmail and link it again.";
+  return "Gmail said: " + msg.slice(0, 120);
 }
 
 // ---------- announcements ----------
@@ -345,7 +480,7 @@ const server = http.createServer(async (req, res) => {
     let body;
     try { body = await readJson(req); } catch { return json(res, 400, { error: "Bad request" }); }
     if (u.pathname === "/api/open") return openInDefaultBrowser(res, body.url);
-    const m = u.pathname.match(/^\/api\/(account|admin)\/([a-z]+)$/);
+    const m = u.pathname.match(/^\/api\/(account|admin)\/([a-z-]+)$/);
     if (!m) return json(res, 404, { error: "Not found" });
     try { return await (m[1] === "account" ? accountApi : adminApi)(req, res, m[2], body); }
     catch (e) { console.log("Request failed: " + e.message); return json(res, 500, { error: "Something went wrong. Try again." }); }
@@ -358,6 +493,7 @@ const server = http.createServer(async (req, res) => {
   if (u.pathname === "/api/version") return json(res, 200, { version: Number(localVersion().version) || 0, lastUpdate });
   if (u.pathname === "/api/fetch") return void proxy(u.searchParams.get("url") || "", res);
   if (u.pathname === "/api/account/me") return accountApi(req, res, "me", {});
+  if (u.pathname === "/api/account/gmail") return accountApi(req, res, "gmail", {});
   if (u.pathname === "/api/accounts") { loadDb(); return json(res, 200, { users: Object.values(db.users).map((x) => x.username).sort() }); }
   if (u.pathname === "/api/admin") return json(res, 200, { owner: isOwnerPc() });
   if (u.pathname === "/api/announcements") {

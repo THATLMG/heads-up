@@ -1,5 +1,5 @@
 {
-  "version": 10,
-  "notes": "Stories and searches now open in your default browser, and you can pick your search engine.",
+  "version": 11,
+  "notes": "New: link your Gmail, deals on tech, laptops and Steam games, and a real Tech topic.",
   "files": ["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]
 }

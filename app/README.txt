@@ -19,6 +19,11 @@ Accounts
 - Save your recovery code when you sign up. It's the only way back in if you forget
   your password, and each code works once.
 
+Gmail
+- Signed in, press "Link Gmail" and paste a Google app password (Heads Up walks you
+  through making one). Heads Up only reads your inbox, never marks anything as read,
+  and stores the app password encrypted by Windows for your user. Unlink in Customize.
+
 Updates
 - Heads Up updates itself. Each time it opens (and every 30 minutes while open) the helper
   checks github.com/THATLMG/heads-up for a newer version, downloads it and swaps it in.

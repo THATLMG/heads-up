@@ -18,7 +18,7 @@
   --glow: 0.30;
   --shadow: 0 1px 2px rgba(18, 20, 40, 0.05), 0 8px 28px rgba(18, 20, 40, 0.06);
   --c-news: #2f7cf6; --c-politics: #df3f5d; --c-social: #b23fd1; --c-claude: #d4682f;
-  --c-cs2: #c98a00; --c-esports: #0e9583; --c-email: #2b9443; --c-topic: #6a5fd8; --c-saved: #c98a00; --c-local: #0a95b8;
+  --c-cs2: #c98a00; --c-esports: #0e9583; --c-email: #2b9443; --c-topic: #6a5fd8; --c-saved: #c98a00; --c-local: #0a95b8; --c-deals: #5c940d;
   --display: "Sora", "Segoe UI", system-ui, sans-serif;
   --body: "Manrope", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
@@ -30,7 +30,7 @@
     --accent: #7b9dff; --accent-ink: #0a0c13; --warn: #f6c860; --warn-bg: rgba(246, 200, 96, 0.12);
     --glow: 0.22; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
     --c-news: #6ea8ff; --c-politics: #ff7c93; --c-social: #df86f3; --c-claude: #f49c6b;
-    --c-cs2: #ffc94a; --c-esports: #40d6bf; --c-email: #6fdb82; --c-topic: #a89dff; --c-saved: #ffc94a; --c-local: #52d3f0;
+    --c-cs2: #ffc94a; --c-esports: #40d6bf; --c-email: #6fdb82; --c-topic: #a89dff; --c-saved: #ffc94a; --c-local: #52d3f0; --c-deals: #a9e34b;
     color-scheme: dark;
   }
 }
@@ -40,7 +40,7 @@
   --accent: #7b9dff; --accent-ink: #0a0c13; --warn: #f6c860; --warn-bg: rgba(246, 200, 96, 0.12);
   --glow: 0.22; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
   --c-news: #6ea8ff; --c-politics: #ff7c93; --c-social: #df86f3; --c-claude: #f49c6b;
-  --c-cs2: #ffc94a; --c-esports: #40d6bf; --c-email: #6fdb82; --c-topic: #a89dff; --c-saved: #ffc94a; --c-local: #52d3f0;
+  --c-cs2: #ffc94a; --c-esports: #40d6bf; --c-email: #6fdb82; --c-topic: #a89dff; --c-saved: #ffc94a; --c-local: #52d3f0; --c-deals: #a9e34b;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -125,6 +125,8 @@ dialog.notes::backdrop { background: rgba(8, 10, 18, 0.5); -webkit-backdrop-filt
 .notes-head { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 22px 14px; background: var(--bg); border-bottom: 1px solid var(--line); }
 .notes-head h2 { margin: 0; font-family: var(--display); font-size: 22px; letter-spacing: -0.02em; }
 .notes-head p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.cz-scroll { scroll-padding-top: 12px; }
+dialog.notes { scroll-padding-top: 96px; }   /* keep things scrolled into view clear of the sticky header */
 .release { padding: 18px 22px; border-bottom: 1px solid var(--line); display: grid; gap: 8px; }
 .release:last-child { border-bottom: 0; }
 .release-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -391,6 +393,7 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 <dialog class="notes modal" id="authDlg" aria-label="Your account"></dialog>
 <dialog class="notes modal" id="customDlg" aria-label="Customize your news"></dialog>
 <dialog class="notes modal" id="adminDlg" aria-label="Send an announcement"></dialog>
+<dialog class="notes modal" id="gmailDlg" aria-label="Link your Gmail"></dialog>
 <div class="wrap">
   <header class="topbar">
     <button class="brand" id="brandBtn" type="button" title="Heads Up home">
@@ -521,7 +524,7 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 </div>
 
 <script>
-const APP_VERSION = 10;   // keep in step with app/version.json in the GitHub repo
+const APP_VERSION = 11;   // keep in step with app/version.json in the GitHub repo
 const SEARCH_ENGINES = {
   google: { name: "Google", url: "https://www.google.com/search?q=" },
   bing: { name: "Bing", url: "https://www.bing.com/search?q=" },
@@ -530,6 +533,10 @@ const SEARCH_ENGINES = {
 };
 // Newest first. Add an entry here with every release; it feeds the patch notes and the bell.
 const CHANGELOG = [
+  { v: 11, date: "2026-10-25", title: "Gmail, deals and better topics", notes: [
+    "<b>Link Gmail</b> to your Heads Up account and see your unread email count and newest emails, right in the app. It uses a Google app password, which Heads Up encrypts on your computer, and it only reads your inbox. Unlink any time from Customize.",
+    "<b>Deals</b>: new Tech deals, Laptop deals and Steam sales sections, with prices and how much is off. Hide any you don't want in Customize.",
+    "<b>Better quick-pick topics</b>: Tech, Science and Business now use Google News' real sections (no more Texas Tech in Tech), and Gaming, Space, Music, Movies & TV and others use smarter searches." ] },
   { v: 10, date: "2026-10-25", title: "Your browser, your search engine", notes: [
     "Stories and web searches now open in <b>your computer's default browser</b> instead of always using Edge.",
     "The Heads Up window opens in your default browser too: as its own app window in Chrome, Edge, Brave and Vivaldi, or as a tab in Firefox and others.",
@@ -571,10 +578,29 @@ const BUILTIN = [
   { id: "social", label: "Social media", url: GN('(TikTok OR Instagram OR "social media" OR Threads OR Bluesky OR YouTube OR Snapchat OR Discord) when:2d'), kind: "gnews", fresh: 24 },
   { id: "claude", label: "Claude & AI", url: GN('(Anthropic OR "Claude AI" OR "Claude Code" OR "Anthropic Claude") when:14d'), kind: "gnews", fresh: 72 },
   { id: "cs2", label: "CS2 updates", url: "https://store.steampowered.com/feeds/news/app/730/?l=english", kind: "steam", fresh: 72 },
-  { id: "esports", label: "CS esports", url: "https://www.hltv.org/rss/news", kind: "rss", fresh: 24,
+  { id: "esports", label: "CS esports", url: "https://www.hltv.org/rss/news", kind: "rss", sourceName: "HLTV", fresh: 24,
     fallback: GN('(HLTV OR "Counter-Strike" esports OR CS2 tournament) when:3d') },
+  { id: "deals", label: "Tech deals", url: "https://9to5toys.com/feed/", kind: "rss", sourceName: "9to5Toys", fresh: 24, color: "var(--c-deals)" },
+  { id: "laptops", label: "Laptop deals", url: "https://slickdeals.net/newsearch.php?q=laptop&searcharea=deals&searchin=first&rss=1", kind: "rss", sourceName: "Slickdeals", fresh: 24, color: "var(--c-deals)" },
+  { id: "steamsale", label: "Steam sales", url: "https://store.steampowered.com/api/featuredcategories?cc=us&l=english", kind: "steamsale", fresh: 24, color: "var(--c-deals)" },
   { id: "email", label: "Email", url: "https://mail.google.com/mail/feed/atom", kind: "gmail", fresh: 24 },
 ];
+// Quick-pick topics that a plain keyword search gets wrong ("Tech" finds Texas Tech): use Google News'
+// own sections where there is one, and tighter searches for the rest.
+const GNTOPIC = (t) => "https://news.google.com/rss/headlines/section/topic/" + t + "?hl=en-US&gl=US&ceid=US:en";
+const TOPIC_FEEDS = {
+  "tech": GNTOPIC("TECHNOLOGY"),
+  "science": GNTOPIC("SCIENCE"),
+  "business": GNTOPIC("BUSINESS"),
+  "gaming": GN('("video game" OR "video games" OR PlayStation OR Xbox OR Nintendo OR Steam OR esports) -casino -gambling -sportsbook when:3d'),
+  "space": GN('(NASA OR SpaceX OR "Blue Origin" OR rocket OR astronaut OR astronomy OR telescope) when:3d'),
+  "movies & tv": GN('(movie OR "box office" OR Netflix OR "TV series" OR trailer OR "streaming service") when:3d'),
+  "music": GN('(album OR song OR singer OR rapper OR "world tour" OR Billboard OR Grammys) when:3d'),
+  "stocks": GN('("stock market" OR "S&P 500" OR Nasdaq OR "Dow Jones") when:2d'),
+  "crypto": GN("(Bitcoin OR Ethereum OR cryptocurrency) when:2d"),
+  "soccer": GN('(soccer OR "Premier League" OR MLS OR "Champions League" OR "La Liga") when:3d'),
+  "formula 1": GN('("Formula 1" OR "F1 Grand Prix") when:3d'),
+};
 const weatherUrl = () => "https://wttr.in/" + (place?.name ? encodeURIComponent(place.name).replace(/%20/g, "+") : "") + "?format=j2";
 const localUrl = (name) => "https://news.google.com/rss/headlines/section/geo/" + encodeURIComponent(name) + "?hl=en-US&gl=US&ceid=US:en";
 const BROWSER = "host:claude_browser";
@@ -624,7 +650,7 @@ const $ = (id) => document.getElementById(id);
 const slug = (s) => "t-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 const localSource = () => place?.name
   ? [{ id: "local", label: "Local · " + place.name.split(",")[0].trim(), url: localUrl(place.name), kind: "gnews", fresh: 24 }] : [];
-const allSources = () => [BUILTIN[0], ...localSource(), ...BUILTIN.slice(1), ...topics.map((t) => ({ id: slug(t), label: t, url: GN(t + " when:3d"), kind: "gnews", fresh: 24, topic: true }))];
+const allSources = () => [BUILTIN[0], ...localSource(), ...BUILTIN.slice(1), ...topics.map((t) => ({ id: slug(t), label: t, url: TOPIC_FEEDS[t.toLowerCase()] || GN(t + " when:3d"), kind: "gnews", fresh: 24, topic: true }))];
 // Every section in the person's chosen order, hidden ones included (for the customize panel).
 function orderedSources() {
   const all = allSources(), order = prefs.sections.order;
@@ -633,7 +659,7 @@ function orderedSources() {
 }
 // The sections that show and load.
 const sources = () => { const hidden = new Set(prefs.sections.hidden); return orderedSources().filter((s) => !hidden.has(s.id)); };
-const colorOf = (src) => src.topic ? "var(--c-topic)" : `var(--c-${src.id})`;
+const colorOf = (src) => src.color || (src.topic ? "var(--c-topic)" : `var(--c-${src.id})`);
 
 // ---------- icons ----------
 const ICON = {
@@ -690,6 +716,18 @@ function parse(src, text) {
     }));
     return { items, total: parseInt(clean(grab(text, "fullcount")), 10) || items.length };
   }
+  if (src.kind === "steamsale") {
+    let specials;
+    try { specials = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)).specials.items; } catch {}
+    if (!Array.isArray(specials)) throw { code: "not_feed" };
+    const money = (cents, cur) => { try { return new Intl.NumberFormat("en-US", { style: "currency", currency: cur || "USD" }).format(cents / 100); } catch { return "$" + (cents / 100).toFixed(2); } };
+    const seen = new Set();
+    return { items: specials.filter((x) => x && x.id && x.name && !seen.has(x.id) && seen.add(x.id)).map((x) => ({
+      title: x.name, link: "https://store.steampowered.com/app/" + x.id, source: "Steam",
+      snippet: (x.discount_percent ? "−" + x.discount_percent + "% · " : "") + money(x.final_price, x.currency) + (x.original_price > x.final_price ? " (was " + money(x.original_price, x.currency) + ")" : "")
+        + (x.discount_expiration ? " · sale ends " + new Date(x.discount_expiration * 1000).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""),
+      date: "" })) };
+  }
   if (!/<rss[\s>]/.test(text)) {
     if (/Just a moment|cf-chl|challenge-platform|Verify you are human/i.test(text))
       throw { code: "bot_check", message: new URL(src.url).hostname };
@@ -700,7 +738,7 @@ function parse(src, text) {
     let source = clean(grab(it, "source"));
     if (src.kind === "gnews" && source && title.endsWith(" - " + source)) title = title.slice(0, -(source.length + 3));
     if (src.kind === "steam") source = "Valve · Steam";
-    if (src.kind === "rss") source = "HLTV";
+    if (src.sourceName && src.kind !== "gnews") source = src.sourceName;
     const snippet = src.kind === "gnews" ? "" : clean(grab(it, "description")).replace(/\\([[\]])/g, "$1").slice(0, 200);
     return { title, link: clean(grab(it, "link")) || clean(grab(it, "guid")), source, snippet, date: clean(grab(it, "pubDate")) };
   }).filter((i) => i.title && /^https?:\/\//.test(i.link));
@@ -767,7 +805,14 @@ function errorCopy(e) {
 async function loadSource(src) {
   loading.add(src.id); render();
   try {
-    if (mode === "local" && src.kind === "gmail") { cache[src.id] = { localOnly: true, items: [], fetchedAt: Date.now() }; return; }
+    if (mode === "local" && src.kind === "gmail") {
+      if (!account) { cache[src.id] = { localOnly: true, needAccount: true, items: [], fetchedAt: Date.now() }; return; }
+      const g = await api("/api/account/gmail").catch((e) => ({ error: e.error }));
+      cache[src.id] = !g.linked && !g.error ? { localOnly: true, items: [], fetchedAt: Date.now() }
+        : g.error ? { ...(cache[src.id]?.linked ? cache[src.id] : { items: [] }), linked: true, email: g.email, error: g.error }
+        : { linked: true, email: g.email, items: g.items, total: g.total, fetchedAt: g.fetchedAt };
+      return;
+    }
     try {
       if (mode === "local" && src.fallback) throw { code: "bot_check" };   // HLTV always blocks the helper
       cache[src.id] = { ...parse(src, await readUrl(src.url)), fetchedAt: Date.now() };
@@ -896,23 +941,29 @@ function itemRow(it, src) {
     el("div", { class: "explain", "data-explain": it.link, hidden: !ex }, ex?.text || "", el("small", { text: "Written by Claude from the headline. Open the story for the full details." })));
 }
 
-function panel(src, mode) {
-  const d = cache[src.id], c = colorOf(src);
+function panel(src, layout) {
+  const d = src.kind === "gmail" && mode === "local" && !account ? { localOnly: true, needAccount: true, items: [] } : cache[src.id], c = colorOf(src);
   const items = (d?.items || []).filter(matches);
-  const limit = mode === "single" || expanded.has(src.id) ? items.length : 5;
+  const limit = layout === "single" || expanded.has(src.id) ? items.length : 5;
   const head = el("div", { class: "panel-head" },
-    el("button", { class: "name", type: "button", onclick: () => setTab(src.id), disabled: mode === "single" },
+    el("button", { class: "name", type: "button", onclick: () => setTab(src.id), disabled: layout === "single" },
       el("span", { class: "dot" }), el("h2", { text: src.label })),
     el("span", { class: "when" },
       loading.has(src.id) ? "loading" : d?.fetchedAt ? ago(d.fetchedAt) : "",
       src.topic ? el("button", { class: "x", type: "button", title: "Stop following " + src.label, "aria-label": "Stop following " + src.label, text: "×", onclick: () => removeTopic(src.label) }) : null));
-  const p = el("article", { class: "card panel" + (mode === "single" ? " single" : ""), style: "--c:" + c }, head);
+  const p = el("article", { class: "card panel" + (layout === "single" ? " single" : ""), style: "--c:" + c }, head);
   if (d?.error) p.append(el("div", { class: "err", text: d.error }));
 
   if (src.kind === "gmail" && d?.localOnly) {
     p.append(el("div", { class: "empty" },
-      el("span", { text: "Email shows up in the Claude app version of Heads Up, which can use the Gmail you're signed in to there." }),
-      el("a", { class: "btn", href: "https://mail.google.com/", target: "_blank", rel: "noopener", text: "Open Gmail ↗" })));
+      el("span", { text: d.needAccount
+        ? "Sign in to your Heads Up account to link your Gmail. Then your unread email shows up right here."
+        : "Link your Gmail and your unread email shows up right here. Heads Up only reads your inbox." }),
+      el("div", { class: "form-row" },
+        d.needAccount
+          ? el("button", { class: "btn primary", type: "button", text: "Sign in", onclick: () => openAuth("login") })
+          : el("button", { class: "btn primary", type: "button", text: "Link Gmail", onclick: openGmailLink }),
+        el("a", { class: "btn", href: "https://mail.google.com/", target: "_blank", rel: "noopener", text: "Open Gmail ↗" }))));
     return p;
   }
   if (src.kind === "gmail" && d?.signedOut) {
@@ -928,7 +979,7 @@ function panel(src, mode) {
     return p;
   }
   p.append(el("ul", { class: "list" }, ...items.slice(0, limit).map((it) => itemRow(it, src))));
-  if (mode !== "single" && items.length > 5)
+  if (layout !== "single" && items.length > 5)
     p.append(el("button", { class: "more", type: "button", text: expanded.has(src.id) ? "Show less" : "Show " + (items.length - 5) + " more",
       onclick: () => { expanded.has(src.id) ? expanded.delete(src.id) : expanded.add(src.id); render(); } }));
   return p;
@@ -1159,7 +1210,7 @@ function applySettings(s) {
 function clearPersonal() {
   topics = []; place = null; saved = []; prefs = normPrefs({});
   for (const k of ["topics", "location", "saved", "prefs"]) store.remove("headsup." + k);
-  delete cache.local; delete cache.weather;
+  delete cache.local; delete cache.weather; delete cache.email;   // never leave someone's inbox on screen
   for (const k of Object.keys(cache)) if (k.startsWith("t-")) delete cache[k];
   store.set("headsup.cache", cache);
 }
@@ -1253,6 +1304,50 @@ function showRecovery(code, title, then, lead) {
       el("div", { class: "form-row" }, copy,
         el("button", { class: "btn primary", type: "button", text: "I saved it, continue", onclick: () => { d.close(); then(); } }))));
   if (!d.open) d.showModal();
+}
+
+// ---------- linking Gmail (read-only, with a Google app password the helper encrypts) ----------
+function openGmailLink() {
+  if (!account) return openAuth("login");
+  const d = $("gmailDlg");
+  const err = el("div", { class: "form-err", role: "alert", hidden: true });
+  const submit = el("button", { class: "btn primary", type: "submit", text: "Link Gmail" });
+  const step = (n, kids) => el("li", {}, ...kids);
+  const form = el("form", { class: "modal-body", novalidate: true },
+    el("p", { text: "Google lets apps read Gmail with an app password: a separate 16-letter password just for Heads Up. Making one takes about a minute." }),
+    el("ol", { style: "margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px" },
+      step(1, ["Turn on ", el("a", { href: "https://myaccount.google.com/signinoptions/twosv", target: "_blank", rel: "noopener", text: "2-Step Verification ↗" }), " for your Google account, if it isn't on already."]),
+      step(2, ["Open ", el("a", { href: "https://myaccount.google.com/apppasswords", target: "_blank", rel: "noopener", text: "App passwords ↗" }), ", name it ", el("b", { text: "Heads Up" }), ", and press Create."]),
+      step(3, ["Copy the 16-letter password Google shows you and paste it below."])),
+    field("gmEmail", "Gmail address", { type: "email", autocomplete: "email", maxlength: 120, placeholder: "you@gmail.com" }),
+    field("gmPass", "App password", { type: "password", autocomplete: "off", maxlength: 64, placeholder: "xxxx xxxx xxxx xxxx", spellcheck: "false" },
+      "Not your normal Google password. Spaces are fine."),
+    err,
+    el("div", { class: "form-row" }, submit),
+    el("p", { style: "font-size:12.5px", text: "Heads Up only reads your inbox: it never sends, deletes, or even marks email as read. The app password is encrypted on this computer, and you can unlink Gmail in Customize or delete the app password in your Google account at any time. School, work and parent-supervised Google accounts may not allow app passwords." }));
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault(); err.hidden = true; submit.disabled = true; submit.textContent = "Checking with Gmail…";
+    try {
+      const g = await api("/api/account/gmail-link", { email: $("gmEmail").value, appPassword: $("gmPass").value });
+      account.gmail = g.email;
+      cache.email = { linked: true, email: g.email, items: g.items, total: g.total, fetchedAt: g.fetchedAt };
+      d.close(); render();
+      if ($("customDlg").open) openCustomize();
+    } catch (e2) { err.textContent = e2.error; err.hidden = false; }
+    submit.disabled = false; submit.textContent = "Link Gmail";
+  });
+  d.replaceChildren(
+    el("div", { class: "notes-head" }, el("div", {}, el("h2", { text: "Link your Gmail" }), el("p", { text: "See your unread email in Heads Up." })),
+      el("button", { class: "btn", type: "button", text: "Close", onclick: () => d.close() })),
+    form);
+  if (!d.open) d.showModal();
+  $("gmEmail").focus();
+}
+async function unlinkGmail() {
+  try { await api("/api/account/gmail-unlink", {}); } catch {}
+  account.gmail = null;
+  cache.email = { localOnly: true, items: [], fetchedAt: Date.now() };
+  render();
 }
 
 function renderAcctBtn() {
@@ -1366,6 +1461,11 @@ function openCustomize() {
   const accountSec = account ? el("section", { class: "cz-sec" },
     el("h3", { text: "Account" }),
     el("p", { text: "Signed in as " + account.username + ". Everything here is saved to your account on this computer." }),
+    el("div", { class: "cz-line" },
+      el("span", { text: account.gmail ? "Gmail: linked to " + account.gmail : "Gmail: not linked" }),
+      account.gmail
+        ? el("button", { class: "btn", type: "button", text: "Unlink", onclick: async () => { await unlinkGmail(); openCustomize(); } })
+        : el("button", { class: "btn", type: "button", text: "Link Gmail", onclick: openGmailLink })),
     el("details", {},
       el("summary", { class: "danger", style: "cursor:pointer;font-weight:600;font-size:14px", text: "Delete my account" }),
       el("form", { class: "form-row", style: "margin-top:10px", onsubmit: async (e) => {
@@ -1397,7 +1497,7 @@ function openCustomize() {
   const sc = d.querySelector(".cz-scroll"); if (sc) sc.scrollTop = scrollTop;
 }
 $("customBtn").onclick = () => openCustomize();
-for (const id of ["authDlg", "customDlg", "adminDlg"]) $(id).addEventListener("click", (e) => { if (e.target === $(id)) $(id).close(); });
+for (const id of ["authDlg", "customDlg", "adminDlg", "gmailDlg"]) $(id).addEventListener("click", (e) => { if (e.target === $(id)) $(id).close(); });
 
 // ---------- announcements from the Heads Up owner ----------
 const ANNOUNCE_RAW = "https://raw.githubusercontent.com/THATLMG/heads-up/main/announcements.json";
@@ -1534,9 +1634,13 @@ function renderNtk() {
   const n = $("ntk"); n.replaceChildren();
   const S = Object.fromEntries(BUILTIN.map((s) => [s.id, s]));
   const shown = new Set(sources().map((s) => s.id));
-  const mail = cache.email;
+  const mail = mode === "local" && !account ? { localOnly: true, needAccount: true } : cache.email;
   if (!shown.has("email")) {}
-  else if (mail?.localOnly) n.append(tile(S.email, "Email", el("div", { class: "v" }, el("a", { href: "https://mail.google.com/", target: "_blank", rel: "noopener", text: "Open Gmail ↗" })), "Unread counts show in the Claude app version"));
+  else if (mail?.localOnly) n.append(tile(S.email, "Email", el("div", { class: "v" },
+    mail.needAccount
+      ? el("button", { class: "linkish", style: "font-size:15.5px", type: "button", text: "Sign in to link Gmail", onclick: () => openAuth("login") })
+      : el("button", { class: "linkish", style: "font-size:15.5px", type: "button", text: "Link your Gmail", onclick: openGmailLink })),
+    "Then your unread email shows here"));
   else if (mail?.signedOut) n.append(tile(S.email, "Email", el("div", { class: "v", text: "Sign in to see unread mail" }), "One-time sign-in in the Claude app's browser"));
   else if (mail?.fetchedAt) n.append(tile(S.email, "Unread email", el("div", { class: "big", text: String(mail.total ?? 0) }),
     mail.items?.[0] ? "Latest: " + mail.items[0].title + (mail.items[0].source ? " — " + mail.items[0].source : "") : "Inbox zero. Nice."));
