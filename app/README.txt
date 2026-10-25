@@ -12,6 +12,13 @@ How it works
   close the window.
 - It needs Node.js, which is already installed on this PC.
 
+Accounts
+- Make an account from the Heads Up homepage. It keeps your sections, topics, location
+  and saved stories. Accounts are stored only on this computer, in %APPDATA%\Heads Up.
+- Passwords are scrambled (scrypt) before they're saved, so nobody can read them.
+- Save your recovery code when you sign up. It's the only way back in if you forget
+  your password, and each code works once.
+
 Updates
 - Heads Up updates itself. Each time it opens (and every 30 minutes while open) the helper
   checks github.com/THATLMG/heads-up for a newer version, downloads it and swaps it in.

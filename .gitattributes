@@ -2,3 +2,5 @@
 *.png binary
 *.ico binary
 *.vbs -text
+*.bat -text
+*.ps1 -text

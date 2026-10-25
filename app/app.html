@@ -93,6 +93,12 @@ button.notif { width: 100%; border: 0; border-bottom: 1px solid var(--line); bac
 .notif .s { font-size: 12.5px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
 .notif-empty { padding: 14px 16px; color: var(--muted); font-size: 13.5px; }
 @media (max-width: 480px) { .btn .lbl { display: none; } }
+@media (max-width: 520px) {
+  .brand-name { display: none; }
+  .top-actions { gap: 6px; }
+  .top-actions .iconbtn, .top-actions .avatar { width: 36px; height: 36px; }
+  .top-actions > .btn { padding: 7px 12px; }
+}
 
 /* Breaking news */
 .breaking { --c: var(--c-politics); display: flex; align-items: center; gap: 14px; padding: 10px 10px 10px 12px; border-radius: 16px; min-width: 0;
@@ -126,6 +132,98 @@ dialog.notes::backdrop { background: rgba(8, 10, 18, 0.5); -webkit-backdrop-filt
 .release .ver { font: 500 12px var(--mono); color: var(--faint); }
 .release ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
 .release ul b { color: var(--ink); font-weight: 600; }
+
+/* Views */
+.view { display: grid; gap: 18px; min-width: 0; }
+button.brand { border: 0; background: none; padding: 0; color: inherit; cursor: pointer; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--glass-hi); cursor: pointer; padding: 0; color: #fff; font: 700 16px var(--display);
+  background: linear-gradient(135deg, var(--c-news), var(--c-social)); box-shadow: var(--shadow); }
+.avatar[aria-expanded="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.acct-pop { width: min(300px, calc(100vw - 32px)); }
+.acct-who { padding: 16px; border-bottom: 1px solid var(--line); display: grid; gap: 2px; }
+.acct-who b { font-family: var(--display); font-size: 17px; }
+.acct-who span { font-size: 12.5px; color: var(--muted); }
+.menu-item { display: flex; width: 100%; gap: 10px; align-items: center; border: 0; background: none; padding: 11px 16px; font-weight: 600; font-size: 14px; cursor: pointer; text-align: left; }
+.menu-item:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.menu-item svg { width: 17px; height: 17px; color: var(--muted); }
+
+/* Homepage */
+.home { gap: 26px; padding-block: 12px 8px; }
+.home-hero { display: grid; gap: 16px; justify-items: start; max-width: 760px; padding-block: 28px 8px; }
+.home-hero h1 { font-size: clamp(38px, 6.5vw, 68px); }
+.home-sub { margin: 0; font-size: 18px; color: var(--muted); max-width: 58ch; line-height: 1.55; }
+.home-ctas { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.home-ctas .btn { padding: 11px 20px; font-size: 15px; }
+.home-profiles { display: grid; gap: 10px; }
+.home-profiles .row { display: flex; flex-wrap: wrap; gap: 10px; }
+.profile { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: var(--glass-hi); border-radius: 999px; padding: 5px 16px 5px 5px; cursor: pointer; font-weight: 600; }
+.profile:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.profile .avatar { width: 32px; height: 32px; font-size: 13px; border-width: 0; box-shadow: none; pointer-events: none; display: grid; place-items: center; }
+.home-features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 900px) { .home-features { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .home-features { grid-template-columns: 1fr; } }
+.feat { padding: 18px 20px; display: grid; gap: 6px; align-content: start; position: relative; overflow: hidden; }
+.feat::after { content: ""; position: absolute; right: -40px; bottom: -50px; width: 130px; height: 130px; border-radius: 50%; background: var(--c); opacity: 0.13; filter: blur(12px); pointer-events: none; }
+.feat .dot { margin-bottom: 4px; }
+.feat h3 { margin: 0; font-family: var(--display); font-size: 17px; letter-spacing: -0.015em; }
+.feat p { margin: 0; color: var(--muted); font-size: 14px; }
+.home-note { margin: 0; color: var(--faint); font-size: 13px; }
+
+/* Forms in dialogs */
+.modal-body { padding: 18px 22px 22px; display: grid; gap: 16px; }
+.modal-tabs { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 6%, transparent); justify-self: start; }
+.modal-tabs button { border: 0; background: none; border-radius: 999px; padding: 7px 14px; font-weight: 600; font-size: 14px; color: var(--muted); cursor: pointer; }
+.modal-tabs button[aria-selected="true"] { background: var(--glass-hi); color: var(--ink); box-shadow: var(--shadow); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 13px; font-weight: 700; }
+.field small { font-size: 12.5px; color: var(--muted); }
+.field input, .field textarea, .field select { width: 100%; border: 1px solid var(--line); background: var(--glass-hi); border-radius: 12px; padding: 10px 14px; font-size: 15px; font-family: inherit; }
+.field textarea { resize: vertical; min-height: 84px; }
+.form-err { padding: 10px 12px; border-radius: 10px; font-size: 13.5px; color: var(--warn); background: var(--warn-bg); }
+.form-ok { padding: 10px 12px; border-radius: 10px; font-size: 13.5px; color: var(--c-email); background: color-mix(in srgb, var(--c-email) 12%, transparent); }
+.form-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.code-box { font: 600 clamp(18px, 4.5vw, 24px) var(--mono); letter-spacing: 0.08em; text-align: center; padding: 16px; border-radius: 14px; border: 2px dashed color-mix(in srgb, var(--accent) 45%, transparent); user-select: all; overflow-wrap: anywhere; }
+.modal-body p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+/* Customize */
+.cz-sec { display: grid; gap: 10px; }
+.cz-sec h3 { margin: 0; font-family: var(--display); font-size: 16px; letter-spacing: -0.01em; }
+.cz-sec > p { font-size: 13px; }
+.sec-list { display: grid; gap: 6px; }
+.sec-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--glass-hi); }
+.sec-row.off { opacity: 0.6; }
+.sec-row .name { flex: 1; min-width: 0; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px; overflow-wrap: anywhere; }
+.mini { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: none; display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--ink); flex: none; }
+.mini:disabled { opacity: 0.3; cursor: default; }
+.mini svg { width: 14px; height: 14px; }
+.switch { position: relative; width: 40px; height: 24px; flex: none; }
+.switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+.switch span { position: absolute; inset: 0; border-radius: 12px; background: color-mix(in srgb, var(--ink) 18%, transparent); transition: background 0.15s; }
+.switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 0.15s; }
+.switch input:checked + span { background: var(--accent); }
+.switch input:checked + span::after { transform: translateX(16px); }
+.switch input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); background: var(--glass-hi); border-radius: 999px; padding: 6px 13px; font-weight: 600; font-size: 13px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.cz-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 600; }
+.danger { color: var(--c-politics); }
+
+/* Announcements */
+.announce { --c: var(--accent); display: flex; align-items: flex-start; gap: 14px; padding: 14px 14px 14px 16px; border-radius: 16px;
+  background: color-mix(in srgb, var(--c) 10%, var(--glass)); border: 1px solid color-mix(in srgb, var(--c) 28%, transparent); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.announce.important { --c: var(--c-claude); }
+.announce .ico { width: 36px; height: 36px; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; flex: none; }
+.announce .ico svg { width: 18px; height: 18px; }
+.announce .txt { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.announce .from { font: 500 11px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.announce b { font-size: 15.5px; overflow-wrap: anywhere; }
+.announce p { margin: 0; font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+.announce a { font-weight: 600; font-size: 13.5px; color: var(--accent); }
+.ann-list { display: grid; gap: 8px; }
+.ann-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--glass-hi); }
+.ann-item div { flex: 1; min-width: 0; display: grid; gap: 2px; font-size: 13.5px; overflow-wrap: anywhere; }
+.ann-item span { color: var(--muted); font-size: 12.5px; }
 
 /* Hero */
 .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 18px; align-items: stretch; }
@@ -290,14 +388,23 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 
 <div class="glows" aria-hidden="true"></div>
 <dialog class="notes" id="notesDlg" aria-labelledby="notesTitle"></dialog>
+<dialog class="notes modal" id="authDlg" aria-label="Your account"></dialog>
+<dialog class="notes modal" id="customDlg" aria-label="Customize your news"></dialog>
+<dialog class="notes modal" id="adminDlg" aria-label="Send an announcement"></dialog>
 <div class="wrap">
   <header class="topbar">
-    <div class="brand">
+    <button class="brand" id="brandBtn" type="button" title="Heads Up home">
       <svg viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f7cf6"/><stop offset="0.55" stop-color="#b23fd1"/><stop offset="1" stop-color="#f08a4b"/></linearGradient></defs>
         <rect x="8" y="8" width="240" height="240" rx="60" fill="url(#lg)"/><rect x="58" y="62" width="140" height="18" rx="9" fill="#fff"/><rect x="58" y="100" width="104" height="14" rx="7" fill="#fff" opacity=".75"/><rect x="58" y="130" width="122" height="14" rx="7" fill="#fff" opacity=".75"/><rect x="58" y="160" width="86" height="14" rx="7" fill="#fff" opacity=".75"/><circle cx="186" cy="178" r="22" fill="#fff"/><circle cx="186" cy="178" r="9" fill="#df3f5d"/></svg>
-      Heads Up
-    </div>
+      <span class="brand-name">Heads Up</span>
+    </button>
     <div class="top-actions">
+      <button class="iconbtn" id="annBtn" type="button" aria-label="Send an announcement" title="Send an announcement" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      </button>
+      <button class="iconbtn" id="customBtn" type="button" aria-label="Customize your news" title="Customize your news">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
       <button class="btn" id="notesBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>
         <span class="lbl">Patch notes</span>
@@ -307,11 +414,36 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
         <span class="badge" id="bellBadge" hidden></span>
       </button>
       <div class="card notif-pop" id="notifPop" role="dialog" aria-label="Notifications" hidden></div>
+      <button class="btn primary" id="signInBtn" type="button" hidden>Sign in</button>
+      <button class="avatar" id="acctBtn" type="button" aria-haspopup="dialog" aria-expanded="false" hidden></button>
+      <div class="card notif-pop acct-pop" id="acctPop" role="dialog" aria-label="Your account" hidden></div>
     </div>
   </header>
 
+  <section class="announce" id="announce" aria-label="Announcement from Heads Up" hidden></section>
+
   <section class="breaking" id="breaking" aria-label="Breaking news" hidden></section>
 
+  <section class="view home" id="homeView" hidden>
+    <div class="home-hero">
+      <div class="eyebrow" id="homeEyebrow">Your news, your way</div>
+      <h1 id="homeTitle">Everything you need to know, <span class="hl">in one place.</span></h1>
+      <p class="home-sub" id="homeSub">Top stories, local news, politics, social media, Claude updates and Counter-Strike 2 patches, all in one window that keeps itself up to date.</p>
+      <div class="home-ctas" id="homeCtas"></div>
+      <div class="home-profiles" id="homeProfiles" hidden></div>
+    </div>
+    <div class="home-features">
+      <div class="card feat" style="--c:var(--c-news)"><span class="dot"></span><h3>Live news, all in one place</h3><p>Top stories, politics, social media and your local news, refreshed on their own.</p></div>
+      <div class="card feat" style="--c:var(--c-cs2)"><span class="dot"></span><h3>Built for gamers</h3><p>Counter-Strike 2 patch notes the moment Valve posts them, plus pro esports news.</p></div>
+      <div class="card feat" style="--c:var(--c-social)"><span class="dot"></span><h3>Make it yours</h3><p>Pick your sections, put them in your order, and follow any topic you like.</p></div>
+      <div class="card feat" style="--c:var(--c-email)"><span class="dot"></span><h3>Your own account</h3><p>Your setup, topics and saved stories stay with your account, behind your password.</p></div>
+      <div class="card feat" style="--c:var(--c-politics)"><span class="dot"></span><h3>Never miss the big one</h3><p>A breaking news bar and a notification bell for what just happened.</p></div>
+      <div class="card feat" style="--c:var(--c-esports)"><span class="dot"></span><h3>Always up to date</h3><p>Heads Up updates itself, with patch notes for every change.</p></div>
+    </div>
+    <p class="home-note" id="homeNote"></p>
+  </section>
+
+  <div class="view" id="appView">
   <section class="hero">
     <div class="hello">
       <div class="eyebrow" id="today"></div>
@@ -326,7 +458,7 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
   <form class="card locate" id="locate" hidden>
     <div>
       <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Where are you?</h2>
-      <p>Tell Heads Up your town and it adds a local news section and your local weather. Type a city and state, or a ZIP code. It's saved only in this browser.</p>
+      <p>Tell Heads Up your town and it adds a local news section and your local weather. Type a city and state, or a ZIP code. It's saved with your settings.</p>
     </div>
     <div class="locate-row">
       <input id="locInput" type="text" maxlength="80" placeholder="City, State or ZIP code" autocomplete="off">
@@ -379,6 +511,7 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
   </form>
 
   <main id="main"></main>
+  </div>
 
   <footer id="foot">
     <div>Shortcuts: <kbd>/</kbd> search · <kbd>R</kbd> refresh · <kbd>Esc</kbd> clear search · <kbd>1</kbd>–<kbd>9</kbd> switch tabs</div>
@@ -388,9 +521,15 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 </div>
 
 <script>
-const APP_VERSION = 8;   // keep in step with app/version.json in the GitHub repo
+const APP_VERSION = 9;   // keep in step with app/version.json in the GitHub repo
 // Newest first. Add an entry here with every release; it feeds the patch notes and the bell.
 const CHANGELOG = [
+  { v: 9, date: "2026-10-25", title: "Accounts, a homepage and your own news", notes: [
+    "<b>Accounts</b>: create one with a username and password. It keeps your sections, topics, location and saved stories. Passwords are scrambled before they're saved on your computer.",
+    "<b>Recovery codes</b> get you back in if you forget your password.",
+    "<b>Homepage</b> with a \"Who's reading?\" picker when more than one person uses Heads Up on a computer.",
+    "<b>Customize your news</b>: turn sections on or off, put them in your order, follow topics with one tap, and turn the breaking news bar on or off.",
+    "<b>Announcements</b> from the Heads Up team show up as a banner and in the notification bell." ] },
   { v: 8, date: "2026-10-25", title: "Breaking news, notifications and patch notes", notes: [
     "<b>Breaking news bar</b> at the top shows stories from the last 3 hours, and rotates through them.",
     "<b>Notification bell</b> with an unread count for app updates, breaking news, new CS2 patches, Claude news and unread email.",
@@ -431,14 +570,28 @@ const BROWSER = "host:claude_browser";
 const STALE_MS = 15 * 60 * 1000;
 const RESERVED = new Set(["settings", "sidebar", "customize", "upgrade", "downloads"]);
 
+// Settings that follow a signed-in person: any change to one is also saved to their account.
+const SYNCED = new Set(["headsup.saved", "headsup.topics", "headsup.location", "headsup.seenVersion", "headsup.prefs"]);
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} if (SYNCED.has(k)) syncSoon(); },
+  remove(k) { try { localStorage.removeItem(k); } catch {} },
 };
 let cache = store.get("headsup.cache", {});
 let saved = store.get("headsup.saved", []);
 let topics = store.get("headsup.topics", []);
 let place = store.get("headsup.location", null);   // {name} once set, {skipped: true} after "Not now"
+const asList = (x) => (Array.isArray(x) ? x.map(String) : []);
+const normPrefs = (p = {}) => ({
+  sections: { order: asList(p.sections?.order), hidden: asList(p.sections?.hidden) },
+  breaking: p.breaking !== false,
+  dismissed: asList(p.dismissed).slice(-50),   // announcement ids
+});
+let prefs = normPrefs(store.get("headsup.prefs", {}));
+let account = null;                          // {username, ...} while signed in (downloaded app only)
+let token = store.get("headsup.token", null);
+let view = "feed", isOwner = false, accountsOn = false;
+let announcements = store.get("headsup.announce", []);
 let seenVersion = store.get("headsup.seenVersion", APP_VERSION - 1);   // newest release whose notes were seen
 let notifSeenAt = store.get("headsup.notifSeenAt", 0);                  // when the bell was last read
 let breakingIdx = 0, breakingHold = false;
@@ -457,7 +610,15 @@ const $ = (id) => document.getElementById(id);
 const slug = (s) => "t-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 const localSource = () => place?.name
   ? [{ id: "local", label: "Local · " + place.name.split(",")[0].trim(), url: localUrl(place.name), kind: "gnews", fresh: 24 }] : [];
-const sources = () => [BUILTIN[0], ...localSource(), ...BUILTIN.slice(1), ...topics.map((t) => ({ id: slug(t), label: t, url: GN(t + " when:3d"), kind: "gnews", fresh: 24, topic: true }))];
+const allSources = () => [BUILTIN[0], ...localSource(), ...BUILTIN.slice(1), ...topics.map((t) => ({ id: slug(t), label: t, url: GN(t + " when:3d"), kind: "gnews", fresh: 24, topic: true }))];
+// Every section in the person's chosen order, hidden ones included (for the customize panel).
+function orderedSources() {
+  const all = allSources(), order = prefs.sections.order;
+  const rank = (s, i) => { const k = order.indexOf(s.id); return k < 0 ? 1000 + i : k; };
+  return all.map((s, i) => [s, rank(s, i)]).sort((a, b) => a[1] - b[1]).map((x) => x[0]);
+}
+// The sections that show and load.
+const sources = () => { const hidden = new Set(prefs.sections.hidden); return orderedSources().filter((s) => !hidden.has(s.id)); };
 const colorOf = (src) => src.topic ? "var(--c-topic)" : `var(--c-${src.id})`;
 
 // ---------- icons ----------
@@ -624,7 +785,7 @@ async function refresh(list = sources(), withWeather = true) {
   busy = true; progress = { done: 0, total: list.length + (withWeather ? 1 : 0) };
   render();
   try {
-    if (withWeather) { await loadWeather(); progress.done++; render(); }
+    if (withWeather) { await loadWeather(); progress.done++; render(); loadAnnouncements(); }
     for (const src of list) { await loadSource(src); progress.done++; render(); }
     hideNotice();
   } catch (e) {
@@ -842,7 +1003,7 @@ function renderBreaking() {
   const box = $("breaking");
   let items = breakingItems(), latest = false;
   if (!items.length && cache.news?.items?.[0]) { items = [cache.news.items[0]]; latest = true; }
-  if (!items.length) { box.hidden = true; return; }
+  if (!items.length || !prefs.breaking) { box.hidden = true; return; }
   breakingIdx = ((breakingIdx % items.length) + items.length) % items.length;
   const it = items[breakingIdx];
   box.hidden = false;
@@ -883,11 +1044,13 @@ function notifications() {
     sub: "Latest: " + mail.items[0].title, t: ts(mail.items[0].date) || mail.fetchedAt, link: "https://mail.google.com/" });
   for (const n of news) { n.unread = n.t > notifSeenAt; n.when = ago(n.t); }
   news.sort((a, b) => b.t - a.t);
-  return { app, news: news.slice(0, 12) };
+  const team = activeAnnouncements().map((a) => ({ kind: a.link ? "link" : "note", c: a.level === "important" ? "var(--c-claude)" : "var(--accent)",
+    title: a.title, sub: a.message || "From Heads Up", when: ago(ts(a.date)), unread: ts(a.date) > notifSeenAt && !prefs.dismissed.includes(a.id), link: a.link }));
+  return { app, news: news.slice(0, 12), team };
 }
 function updateBell() {
-  const { app, news } = notifications();
-  const count = app.filter((n) => n.unread).length + news.filter((n) => n.unread).length;
+  const { app, news, team } = notifications();
+  const count = app.filter((n) => n.unread).length + news.filter((n) => n.unread).length + team.filter((n) => n.unread).length;
   const b = $("bellBadge");
   b.hidden = !count;
   b.textContent = count > 9 ? "9+" : String(count);
@@ -898,15 +1061,16 @@ function notifRow(n) {
   const kids = [el("span", { class: "dot", style: "--c:" + n.c }), el("span", { class: "t", text: n.title }),
     el("span", { class: "s" }, el("span", { text: n.sub }), n.when ? el("span", { text: n.when }) : null)];
   const cls = "notif" + (n.unread ? " unread" : "");
-  return n.kind === "app"
-    ? el("button", { class: cls, type: "button", style: "--c:" + n.c, onclick: () => { closeNotifs(); openNotes(n.v); } }, ...kids)
-    : el("a", { class: cls, href: n.link, target: "_blank", rel: "noopener", style: "--c:" + n.c }, ...kids);
+  if (n.kind === "app") return el("button", { class: cls, type: "button", style: "--c:" + n.c, onclick: () => { closeNotifs(); openNotes(n.v); } }, ...kids);
+  if (n.kind === "note") return el("div", { class: cls, style: "--c:" + n.c }, ...kids);
+  return el("a", { class: cls, href: n.link, target: "_blank", rel: "noopener", style: "--c:" + n.c }, ...kids);
 }
 function renderNotifPop() {
-  const { app, news } = notifications();
+  const { app, news, team } = notifications();
   $("notifPop").replaceChildren(
     el("div", { class: "notif-head" }, el("h2", { text: "Notifications" }),
       el("button", { class: "linkish", type: "button", text: "Mark all as read", onclick: () => { markRead(); renderNotifPop(); } })),
+    ...(team.length ? [el("div", { class: "notif-sec eyebrow", text: "From Heads Up" }), ...team.map(notifRow)] : []),
     el("div", { class: "notif-sec eyebrow", text: "App updates" }),
     ...app.map(notifRow),
     el("div", { class: "notif-sec eyebrow", text: "News for you" }),
@@ -942,6 +1106,357 @@ function openNotes(focusV) {
 }
 $("notesBtn").onclick = () => openNotes();
 $("notesDlg").addEventListener("click", (e) => { if (e.target === $("notesDlg")) $("notesDlg").close(); });
+
+// ---------- accounts (downloaded app only: the helper keeps them on this PC) ----------
+async function api(path, body) {
+  const headers = { "X-Heads-Up": "1", "Content-Type": "application/json" };
+  if (token) headers.Authorization = "Bearer " + token;
+  let r;
+  try { r = await fetch(path, body === undefined ? { headers, cache: "no-store" } : { method: "POST", headers, body: JSON.stringify(body) }); }
+  catch { throw { status: 0, error: "Heads Up's helper isn't answering. Close the window and open Heads Up again." }; }
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw { status: r.status, error: data.error || "Something went wrong. Try again." };
+  return data;
+}
+const collectSettings = () => ({ topics, location: place, saved, prefs, seenVersion });
+let syncTimer = null, syncState = "";
+function syncSoon() {
+  if (!account || !token) return;
+  clearTimeout(syncTimer);
+  syncState = "Saving…";
+  syncTimer = setTimeout(async () => {
+    try { await api("/api/account/settings", { settings: collectSettings() }); syncState = "Saved to your account"; }
+    catch (e) { syncState = e.status === 401 ? "Signed out" : "Couldn't save. Will try again with your next change."; if (e.status === 401) signedOut(); }
+    if (!$("acctPop").hidden) renderAcctPop();
+  }, 900);
+}
+// Put a person's saved settings into effect (after signing in).
+function applySettings(s) {
+  topics = asList(s.topics).slice(0, 30);
+  place = s.location && typeof s.location === "object" ? s.location : null;
+  saved = Array.isArray(s.saved) ? s.saved.slice(0, 200) : [];
+  prefs = normPrefs(s.prefs);
+  if (s.seenVersion) seenVersion = Math.min(Number(s.seenVersion) || 0, APP_VERSION);
+  for (const [k, v] of [["topics", topics], ["location", place], ["saved", saved], ["prefs", prefs], ["seenVersion", seenVersion]]) {
+    try { localStorage.setItem("headsup." + k, JSON.stringify(v)); } catch {}
+  }
+  delete cache.local; delete cache.weather;
+}
+function clearPersonal() {
+  topics = []; place = null; saved = []; prefs = normPrefs({});
+  for (const k of ["topics", "location", "saved", "prefs"]) store.remove("headsup." + k);
+  delete cache.local; delete cache.weather;
+  for (const k of Object.keys(cache)) if (k.startsWith("t-")) delete cache[k];
+  store.set("headsup.cache", cache);
+}
+async function signedIn(res, isNew) {
+  token = res.token; store.set("headsup.token", token);
+  account = res.user;
+  if (!isNew && account.settings && Object.keys(account.settings).length) applySettings(account.settings);
+  else { account.settings = collectSettings(); syncSoon(); }   // a new account keeps the setup made as a guest
+  store.set("headsup.guest", false);
+  $("locate").hidden = !!place;
+  if (!place) showLocate();
+  showView("feed");
+  refresh();
+}
+function signedOut() {
+  account = null; token = null; store.remove("headsup.token");
+  clearPersonal();
+  closeAcct();
+  showView("home");
+}
+async function signOut() {
+  try { await api("/api/account/logout", {}); } catch {}
+  signedOut();
+}
+
+function field(id, label, attrs = {}, hint) {
+  return el("div", { class: "field" }, el("label", { for: id, text: label }), el("input", { id, ...attrs }), hint ? el("small", { text: hint }) : null);
+}
+function openAuth(modeName = "create", username = "") {
+  const d = $("authDlg");
+  const tabs = el("div", { class: "modal-tabs", role: "tablist" },
+    ...[["create", "Create account"], ["login", "Sign in"]].map(([m, t]) =>
+      el("button", { type: "button", role: "tab", "aria-selected": String(modeName === m), text: t, onclick: () => openAuth(m, $("authUser")?.value || username) })));
+  const err = el("div", { class: "form-err", role: "alert", hidden: true });
+  const fail = (e) => { err.textContent = e.error || String(e); err.hidden = false; submit.disabled = false; };
+  let form, submit;
+  if (modeName === "create" || modeName === "login") {
+    const isNew = modeName === "create";
+    submit = el("button", { class: "btn primary", type: "submit", text: isNew ? "Create account" : "Sign in" });
+    form = el("form", { class: "modal-body", novalidate: true },
+      tabs,
+      el("p", { text: isNew ? "Your account keeps your sections, topics, location and saved stories. It's stored on this computer, and your password is scrambled so nobody can read it." : "Welcome back. Sign in to load your setup." }),
+      field("authUser", "Username", { type: "text", autocomplete: "username", maxlength: 20, value: username, required: true }, isNew ? "3 to 20 letters, numbers, dots, dashes or underscores." : null),
+      field("authPass", "Password", { type: "password", autocomplete: isNew ? "new-password" : "current-password", maxlength: 200, required: true }, isNew ? "At least 8 characters." : null),
+      err,
+      el("div", { class: "form-row" }, submit,
+        isNew ? null : el("button", { class: "linkish", type: "button", text: "Forgot your password?", onclick: () => openAuth("recover", $("authUser").value) })));
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault(); err.hidden = true; submit.disabled = true;
+      try {
+        const res = await api("/api/account/" + modeName, { username: $("authUser").value.trim(), password: $("authPass").value });
+        if (isNew) showRecovery(res.recoveryCode, "Your account is ready", () => { signedIn(res, true); openCustomize(); });
+        else { d.close(); signedIn(res, false); }
+      } catch (e2) { fail(e2); }
+    });
+  } else {
+    submit = el("button", { class: "btn primary", type: "submit", text: "Reset password" });
+    form = el("form", { class: "modal-body", novalidate: true },
+      el("p", { text: "Use the recovery code you saved when you made your account to set a new password." }),
+      field("authUser", "Username", { type: "text", autocomplete: "username", maxlength: 20, value: username }),
+      field("authCode", "Recovery code", { type: "text", autocomplete: "off", maxlength: 24, placeholder: "XXXX-XXXX-XXXX-XXXX", spellcheck: "false" }),
+      field("authPass", "New password", { type: "password", autocomplete: "new-password", maxlength: 200 }, "At least 8 characters."),
+      err,
+      el("div", { class: "form-row" }, submit, el("button", { class: "linkish", type: "button", text: "Back to sign in", onclick: () => openAuth("login", $("authUser").value) })));
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault(); err.hidden = true; submit.disabled = true;
+      try {
+        const res = await api("/api/account/recover", { username: $("authUser").value.trim(), code: $("authCode").value, password: $("authPass").value });
+        showRecovery(res.recoveryCode, "Password changed", () => signedIn(res, false), "Your old recovery code no longer works. Here's your new one.");
+      } catch (e2) { fail(e2); }
+    });
+  }
+  d.replaceChildren(
+    el("div", { class: "notes-head" },
+      el("div", {}, el("h2", { text: modeName === "recover" ? "Reset your password" : modeName === "create" ? "Create your account" : "Sign in" })),
+      el("button", { class: "btn", type: "button", text: "Close", onclick: () => d.close() })),
+    form);
+  if (!d.open) d.showModal();
+  (username && $("authPass") ? $("authPass") : $("authUser"))?.focus();
+}
+function showRecovery(code, title, then, lead) {
+  const d = $("authDlg");
+  const copy = el("button", { class: "btn", type: "button", text: "Copy code", onclick: () => {
+    navigator.clipboard?.writeText(code).then(() => (copy.textContent = "Copied"), () => (copy.textContent = "Select the code and copy it"));
+  } });
+  d.replaceChildren(
+    el("div", { class: "notes-head" }, el("div", {}, el("h2", { text: title }))),
+    el("div", { class: "modal-body" },
+      el("p", { text: (lead ? lead + " " : "") + "Write down or screenshot this recovery code. It's the only way back in if you forget your password, and it won't be shown again." }),
+      el("div", { class: "code-box", text: code }),
+      el("div", { class: "form-row" }, copy,
+        el("button", { class: "btn primary", type: "button", text: "I saved it, continue", onclick: () => { d.close(); then(); } }))));
+  if (!d.open) d.showModal();
+}
+
+function renderAcctBtn() {
+  const btn = $("acctBtn"), sign = $("signInBtn");
+  btn.hidden = !account;
+  sign.hidden = !accountsOn || !!account;
+  if (account) { btn.textContent = account.username[0].toUpperCase(); btn.setAttribute("aria-label", "Your account, " + account.username); }
+  $("annBtn").hidden = !isOwner;
+}
+function renderAcctPop() {
+  const ICO = {
+    tune: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
+    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></svg>',
+    out: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>',
+  };
+  $("acctPop").replaceChildren(
+    el("div", { class: "acct-who" }, el("b", { text: account.username }), el("span", { text: syncState || "Your settings are saved to your account." })),
+    el("button", { class: "menu-item", type: "button", html: ICO.tune + "Customize my news", onclick: () => { closeAcct(); openCustomize(); } }),
+    el("button", { class: "menu-item", type: "button", html: ICO.home + "Home", onclick: () => { closeAcct(); showView("home"); } }),
+    el("button", { class: "menu-item", type: "button", html: ICO.out + "Sign out", onclick: signOut }));
+}
+function closeAcct() { $("acctPop").hidden = true; $("acctBtn").setAttribute("aria-expanded", "false"); }
+$("acctBtn").onclick = () => {
+  if (!$("acctPop").hidden) return closeAcct();
+  closeNotifs(); renderAcctPop(); $("acctPop").hidden = false; $("acctBtn").setAttribute("aria-expanded", "true");
+};
+$("signInBtn").onclick = () => openAuth("login");
+document.addEventListener("click", (e) => { if (!$("acctPop").hidden && !e.target.closest("#acctPop, #acctBtn")) closeAcct(); });
+
+// ---------- homepage ----------
+async function renderHome() {
+  const ctas = $("homeCtas");
+  if (account) {
+    $("homeEyebrow").textContent = "Welcome back";
+    $("homeTitle").replaceChildren("Hi, ", el("span", { class: "hl", text: account.username }), ". Here's your news.");
+    ctas.replaceChildren(
+      el("button", { class: "btn primary", type: "button", text: "Open my news", onclick: () => showView("feed") }),
+      el("button", { class: "btn", type: "button", text: "Customize", onclick: openCustomize }));
+  } else {
+    $("homeEyebrow").textContent = "Your news, your way";
+    $("homeTitle").replaceChildren("Everything you need to know, ", el("span", { class: "hl", text: "in one place." }));
+    ctas.replaceChildren(...(accountsOn
+      ? [el("button", { class: "btn primary", type: "button", text: "Create a free account", onclick: () => openAuth("create") }),
+         el("button", { class: "btn", type: "button", text: "Sign in", onclick: () => openAuth("login") }),
+         el("button", { class: "linkish", type: "button", text: "Continue without an account", onclick: () => { store.set("headsup.guest", true); showView("feed"); } })]
+      : [el("button", { class: "btn primary", type: "button", text: "Open my news", onclick: () => showView("feed") })]));
+  }
+  $("homeNote").textContent = accountsOn
+    ? "Accounts are saved on this computer. Passwords are scrambled before they're stored, so nobody can read them."
+    : mode === "app" ? "Accounts are part of the downloaded Heads Up app. This version keeps your settings in this browser." : "";
+  const box = $("homeProfiles");
+  box.hidden = true;
+  if (accountsOn && !account) {
+    try {
+      const { users } = await api("/api/accounts");
+      if (users.length) {
+        box.replaceChildren(el("div", { class: "eyebrow", text: "Who's reading?" }),
+          el("div", { class: "row" }, ...users.slice(0, 12).map((u) =>
+            el("button", { class: "profile", type: "button", onclick: () => openAuth("login", u) }, el("span", { class: "avatar", text: u[0].toUpperCase() }), u))));
+        box.hidden = false;
+      }
+    } catch {}
+  }
+}
+function showView(v) {
+  view = v;
+  $("homeView").hidden = v !== "home";
+  $("appView").hidden = v !== "feed";
+  if (v === "home") renderHome();
+  render();
+  window.scrollTo(0, 0);
+}
+$("brandBtn").onclick = () => showView("home");
+
+// ---------- customize ----------
+const PRESETS = ["NBA", "NFL", "Soccer", "Formula 1", "Tech", "Gaming", "Valorant", "Fortnite", "Minecraft", "Music", "Movies & TV", "Science", "Space", "Business", "Stocks", "Crypto"];
+const savePrefs = () => store.set("headsup.prefs", prefs);
+function openCustomize() {
+  const d = $("customDlg");
+  const scrollTop = d.querySelector(".cz-scroll")?.scrollTop || 0;
+  const list = orderedSources(), hidden = new Set(prefs.sections.hidden), ids = list.map((s) => s.id);
+  const move = (i, by) => { const order = ids.slice(); [order[i], order[i + by]] = [order[i + by], order[i]]; prefs.sections.order = order; savePrefs(); render(); openCustomize(); };
+  const toggle = (s, on) => {
+    prefs.sections.hidden = on ? prefs.sections.hidden.filter((x) => x !== s.id) : [...new Set([...prefs.sections.hidden, s.id])];
+    savePrefs(); render(); openCustomize();
+    if (on && !cache[s.id]?.fetchedAt) refresh([s], false);
+  };
+  const UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';
+  const DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+  const rows = list.map((s, i) => el("div", { class: "sec-row" + (hidden.has(s.id) ? " off" : ""), style: "--c:" + colorOf(s) },
+    el("span", { class: "name" }, el("span", { class: "dot" }), s.label),
+    el("label", { class: "switch", title: (hidden.has(s.id) ? "Show " : "Hide ") + s.label },
+      el("input", { type: "checkbox", checked: !hidden.has(s.id), "aria-label": "Show " + s.label, onchange: (e) => toggle(s, e.target.checked) }), el("span")),
+    el("button", { class: "mini", type: "button", "aria-label": "Move " + s.label + " up", html: UP, disabled: i === 0, onclick: () => move(i, -1) }),
+    el("button", { class: "mini", type: "button", "aria-label": "Move " + s.label + " down", html: DOWN, disabled: i === list.length - 1, onclick: () => move(i, 1) }),
+    s.topic ? el("button", { class: "mini", type: "button", "aria-label": "Stop following " + s.label, text: "×", onclick: () => { removeTopic(s.label); openCustomize(); } }) : null));
+  const followed = new Set(topics.map((t) => t.toLowerCase()));
+  const chips = PRESETS.map((p) => el("button", { class: "chip", type: "button", "aria-pressed": String(followed.has(p.toLowerCase())),
+    text: p, onclick: () => { followed.has(p.toLowerCase()) ? removeTopic(topics.find((t) => t.toLowerCase() === p.toLowerCase())) : followTopic(p, true); openCustomize(); } }));
+  const addForm = el("form", { class: "form-row" },
+    el("input", { id: "czTopic", type: "text", maxlength: 60, placeholder: "Or type any topic", "aria-label": "Topic to follow", style: "flex:1 1 200px;min-width:0;border:1px solid var(--line);background:var(--glass-hi);border-radius:999px;padding:8px 14px;font-size:14px" }),
+    el("button", { class: "btn", type: "submit", text: "Follow" }));
+  addForm.addEventListener("submit", (e) => { e.preventDefault(); const v = $("czTopic").value.trim(); if (v) { followTopic(v, true); openCustomize(); } });
+  const locForm = el("form", { class: "form-row" },
+    el("input", { id: "czLoc", type: "text", maxlength: 80, value: place?.name || "", placeholder: "City, State or ZIP code", "aria-label": "Your location", style: "flex:1 1 200px;min-width:0;border:1px solid var(--line);background:var(--glass-hi);border-radius:999px;padding:8px 14px;font-size:14px" }),
+    el("button", { class: "btn", type: "submit", text: "Save" }),
+    place?.name ? el("button", { class: "linkish", type: "button", text: "Remove", onclick: () => { place = { skipped: true }; store.set("headsup.location", place); delete cache.local; render(); openCustomize(); } }) : null);
+  locForm.addEventListener("submit", (e) => { e.preventDefault(); if ($("czLoc").value.trim()) { setPlace($("czLoc").value); openCustomize(); } });
+
+  const delErr = el("div", { class: "form-err", role: "alert", hidden: true });
+  const accountSec = account ? el("section", { class: "cz-sec" },
+    el("h3", { text: "Account" }),
+    el("p", { text: "Signed in as " + account.username + ". Everything here is saved to your account on this computer." }),
+    el("details", {},
+      el("summary", { class: "danger", style: "cursor:pointer;font-weight:600;font-size:14px", text: "Delete my account" }),
+      el("form", { class: "form-row", style: "margin-top:10px", onsubmit: async (e) => {
+        e.preventDefault();
+        try { await api("/api/account/delete", { password: $("czDelPass").value }); d.close(); signedOut(); }
+        catch (e2) { delErr.textContent = e2.error; delErr.hidden = false; }
+      } },
+        el("input", { id: "czDelPass", type: "password", autocomplete: "current-password", placeholder: "Your password", "aria-label": "Password to confirm", style: "flex:1 1 180px;min-width:0;border:1px solid var(--line);background:var(--glass-hi);border-radius:999px;padding:8px 14px;font-size:14px" }),
+        el("button", { class: "btn", type: "submit", text: "Delete forever" })),
+      delErr)) : null;
+
+  d.replaceChildren(
+    el("div", { class: "notes-head" },
+      el("div", {}, el("h2", { text: "Customize your news" }), el("p", { text: account ? "Changes save to your account as you go." : accountsOn ? "Changes are saved on this computer. Make an account to keep them with you." : "Changes are saved in this browser." })),
+      el("button", { class: "btn primary", type: "button", text: "Done", onclick: () => d.close() })),
+    el("div", { class: "modal-body cz-scroll", style: "overflow:auto" },
+      el("section", { class: "cz-sec" }, el("h3", { text: "Sections" }), el("p", { text: "Turn sections on or off and choose their order. Hidden sections aren't loaded at all." }), el("div", { class: "sec-list" }, ...rows)),
+      el("section", { class: "cz-sec" }, el("h3", { text: "Topics you follow" }), el("p", { text: "Each topic gets its own section with the last few days of news." }), el("div", { class: "chips" }, ...chips), addForm),
+      el("section", { class: "cz-sec" }, el("h3", { text: "Your location" }), el("p", { text: "For local news and weather." }), locForm),
+      el("section", { class: "cz-sec" }, el("div", { class: "cz-line" }, el("span", { text: "Show the breaking news bar" }),
+        el("label", { class: "switch" }, el("input", { type: "checkbox", checked: prefs.breaking, "aria-label": "Show the breaking news bar",
+          onchange: (e) => { prefs.breaking = e.target.checked; savePrefs(); render(); } }), el("span")))),
+      accountSec));
+  if (!d.open) d.showModal();
+  const sc = d.querySelector(".cz-scroll"); if (sc) sc.scrollTop = scrollTop;
+}
+$("customBtn").onclick = () => openCustomize();
+for (const id of ["authDlg", "customDlg", "adminDlg"]) $(id).addEventListener("click", (e) => { if (e.target === $(id)) $(id).close(); });
+
+// ---------- announcements from the Heads Up owner ----------
+const ANNOUNCE_RAW = "https://raw.githubusercontent.com/THATLMG/heads-up/main/announcements.json";
+const validAnn = (a) => a && typeof a.id === "string" && typeof a.title === "string" && a.title.length <= 120 && (a.message == null || typeof a.message === "string");
+const activeAnnouncements = () => announcements.filter((a) => !a.expires || ts(a.expires) > Date.now());
+async function loadAnnouncements() {
+  try {
+    let data;
+    if (mode === "local") data = await (await fetch("/api/announcements", { cache: "no-store" })).json();
+    else if (mode === "app") { const t = await readUrl(ANNOUNCE_RAW + "?t=" + Date.now()); data = JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1)); }
+    else return;
+    announcements = (Array.isArray(data.announcements) ? data.announcements : []).filter(validAnn).slice(0, 15);
+    store.set("headsup.announce", announcements);
+    renderAnnounce(); updateBell();
+  } catch {}
+}
+function renderAnnounce() {
+  const box = $("announce");
+  const a = activeAnnouncements().find((x) => !prefs.dismissed.includes(x.id));
+  if (!a) { box.hidden = true; return; }
+  box.hidden = false;
+  box.className = "announce" + (a.level === "important" ? " important" : "");
+  box.replaceChildren(
+    el("span", { class: "ico", html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>' }),
+    el("div", { class: "txt" },
+      el("span", { class: "from", text: "From Heads Up · " + ago(ts(a.date)) }),
+      el("b", { text: a.title }),
+      a.message ? el("p", { text: a.message }) : null,
+      a.link && /^https:\/\//.test(a.link) ? el("a", { href: a.link, target: "_blank", rel: "noopener", text: "Learn more ↗" }) : null),
+    el("button", { class: "mini", type: "button", "aria-label": "Dismiss announcement", text: "×", onclick: () => {
+      prefs.dismissed = [...prefs.dismissed, a.id].slice(-50); savePrefs(); renderAnnounce(); updateBell();
+    } }));
+}
+
+function openAdmin() {
+  const d = $("adminDlg");
+  const err = el("div", { class: "form-err", role: "alert", hidden: true }), ok = el("div", { class: "form-ok", role: "status", hidden: true });
+  const submit = el("button", { class: "btn primary", type: "submit", text: "Send to everyone" });
+  const form = el("form", { class: "modal-body", novalidate: true },
+    el("p", { text: "This goes to everyone who uses Heads Up. It shows as a banner at the top and in their notification bell, usually within 5 minutes." }),
+    field("anTitle", "Title", { type: "text", maxlength: 80, placeholder: "New: draggable tabs!" }),
+    el("div", { class: "field" }, el("label", { for: "anMsg", text: "Message (optional)" }), el("textarea", { id: "anMsg", maxlength: 400 })),
+    el("div", { class: "form-row" },
+      el("div", { class: "field", style: "flex:1 1 160px" }, el("label", { for: "anLevel", text: "Type" }),
+        el("select", { id: "anLevel" }, el("option", { value: "info", text: "Normal" }), el("option", { value: "important", text: "Important" }))),
+      el("div", { class: "field", style: "flex:1 1 160px" }, el("label", { for: "anDays", text: "Show it for" }),
+        el("select", { id: "anDays" }, ...[["1", "1 day"], ["3", "3 days"], ["7", "1 week"], ["30", "1 month"], ["0", "Until I remove it"]].map(([v, t]) => el("option", { value: v, text: t, selected: v === "7" }))))),
+    field("anLink", "Link (optional)", { type: "url", maxlength: 300, placeholder: "https://…" }),
+    err, ok, el("div", { class: "form-row" }, submit));
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault(); err.hidden = ok.hidden = true; submit.disabled = true; submit.textContent = "Sending…";
+    try {
+      const data = await api("/api/admin/announce", { title: $("anTitle").value, message: $("anMsg").value, level: $("anLevel").value, days: +$("anDays").value, link: $("anLink").value });
+      announcements = data.announcements.filter(validAnn); store.set("headsup.announce", announcements);
+      ok.textContent = "Sent! It's on GitHub now, and everyone's Heads Up picks it up within about 5 minutes."; ok.hidden = false;
+      $("anTitle").value = $("anMsg").value = $("anLink").value = "";
+      renderAnnounce(); updateBell(); renderList();
+    } catch (e2) { err.textContent = e2.error; err.hidden = false; }
+    submit.disabled = false; submit.textContent = "Send to everyone";
+  });
+  const listBox = el("div", { class: "ann-list" });
+  const renderList = () => listBox.replaceChildren(...(announcements.length ? announcements.map((a) => el("div", { class: "ann-item" },
+    el("div", {}, el("b", { text: a.title }), el("span", { text: [a.level === "important" ? "Important" : "Normal", "sent " + ago(ts(a.date)), a.expires ? (ts(a.expires) > Date.now() ? "ends " + new Date(a.expires).toLocaleDateString() : "ended") : "no end date"].join(" · ") })),
+    el("button", { class: "btn", type: "button", text: "Remove", onclick: async (e) => {
+      e.target.disabled = true;
+      try { const data = await api("/api/admin/remove", { id: a.id }); announcements = data.announcements.filter(validAnn); store.set("headsup.announce", announcements); renderAnnounce(); updateBell(); renderList(); }
+      catch (e2) { err.textContent = e2.error; err.hidden = false; e.target.disabled = false; }
+    } }))) : [el("p", { text: "No announcements yet." })]));
+  renderList();
+  d.replaceChildren(
+    el("div", { class: "notes-head" }, el("div", {}, el("h2", { text: "Send an announcement" }), el("p", { text: "Only you see this button, because only your computer can publish to GitHub." })),
+      el("button", { class: "btn", type: "button", text: "Close", onclick: () => d.close() })),
+    form,
+    el("div", { class: "modal-body", style: "padding-top:0" }, el("h3", { style: "margin:0;font-family:var(--display);font-size:16px", text: "Sent announcements" }), listBox));
+  if (!d.open) d.showModal();
+}
+$("annBtn").onclick = openAdmin;
 
 // ---------- tab strip: drag, mouse wheel and arrows for when the window is too narrow ----------
 function updateTabArrows() {
@@ -1000,14 +1515,18 @@ function tile(src, key, value, sub, pill) {
 function renderNtk() {
   const n = $("ntk"); n.replaceChildren();
   const S = Object.fromEntries(BUILTIN.map((s) => [s.id, s]));
+  const shown = new Set(sources().map((s) => s.id));
   const mail = cache.email;
-  if (mail?.localOnly) n.append(tile(S.email, "Email", el("div", { class: "v" }, el("a", { href: "https://mail.google.com/", target: "_blank", rel: "noopener", text: "Open Gmail ↗" })), "Unread counts show in the Claude app version"));
+  if (!shown.has("email")) {}
+  else if (mail?.localOnly) n.append(tile(S.email, "Email", el("div", { class: "v" }, el("a", { href: "https://mail.google.com/", target: "_blank", rel: "noopener", text: "Open Gmail ↗" })), "Unread counts show in the Claude app version"));
   else if (mail?.signedOut) n.append(tile(S.email, "Email", el("div", { class: "v", text: "Sign in to see unread mail" }), "One-time sign-in in the Claude app's browser"));
   else if (mail?.fetchedAt) n.append(tile(S.email, "Unread email", el("div", { class: "big", text: String(mail.total ?? 0) }),
     mail.items?.[0] ? "Latest: " + mail.items[0].title + (mail.items[0].source ? " — " + mail.items[0].source : "") : "Inbox zero. Nice."));
   else n.append(tile(S.email, "Email", el("div", { class: "v", text: "Not checked yet" }), "Press Refresh to check Gmail"));
-  for (const [id, label] of [["cs2", "Latest CS2 patch"], ["claude", "Latest on Claude"], ["news", "Top story"]]) {
+  for (const [id, label] of [["cs2", "Latest CS2 patch"], ["claude", "Latest on Claude"], ["news", "Top story"], ["local", "Local news"], ["politics", "Politics"]]) {
+    if (!shown.has(id) || n.children.length >= 4) continue;
     const top = cache[id]?.items?.[0];
+    S.local = S.local || localSource()[0];
     n.append(top
       ? tile(S[id], label, el("div", { class: "v" }, el("a", { href: top.link, target: "_blank", rel: "noopener", text: top.title })),
           [top.source, ago(ts(top.date))].filter(Boolean).join(" · "), recent(S[id], top.date) ? "Recent" : null)
@@ -1019,7 +1538,9 @@ function renderHero() {
   const h = new Date().getHours();
   const part = h < 5 ? "Late night" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
   const [a, ...rest] = part.split(" ");
-  $("greet").replaceChildren(a + " ", el("span", { class: "hl", text: rest.join(" ") }));
+  $("greet").replaceChildren(...(account
+    ? [part + ", ", el("span", { class: "hl", text: account.username })]
+    : [a + " ", el("span", { class: "hl", text: rest.join(" ") })]));
   $("today").textContent = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
   const all = sources().filter((s) => s.id !== "email");
@@ -1080,7 +1601,7 @@ $("locSkip").onclick = () => {
 };
 
 function render() {
-  renderHero(); renderNtk(); renderTabs(); renderBreaking(); updateBell();
+  renderHero(); renderNtk(); renderTabs(); renderBreaking(); updateBell(); renderAnnounce(); renderAcctBtn();
   const m = $("main"), all = sources();
   if (!all.some((s) => s.id === tab) && tab !== "saved" && tab !== "all" && !(tab === "search" && searchRes)) tab = "all";
   let view;
@@ -1118,13 +1639,14 @@ function hideNotice() { $("notice").hidden = true; }
 // ---------- topics ----------
 function openTopicForm() { $("topicForm").hidden = false; $("topicInput").focus(); }
 $("topicCancel").onclick = () => { $("topicForm").hidden = true; $("topicInput").value = ""; };
-function followTopic(t) {
+function followTopic(t, quiet) {
   t = t.trim().replace(/\s+/g, " ");
   if (!t || slug(t) === "t-") return;
   if (!topics.some((x) => slug(x) === slug(t))) { topics.push(t); store.set("headsup.topics", topics); }
+  if (prefs.sections.hidden.includes(slug(t))) { prefs.sections.hidden = prefs.sections.hidden.filter((x) => x !== slug(t)); savePrefs(); }
   $("topicInput").value = ""; $("topicForm").hidden = true;
   const src = sources().find((s) => s.id === slug(t));
-  setTab(src.id);
+  if (quiet) render(); else setTab(src.id);
   refresh([src], false);
 }
 $("topicForm").addEventListener("submit", (e) => { e.preventDefault(); followTopic($("topicInput").value); });
@@ -1220,6 +1742,8 @@ $("q").addEventListener("input", (e) => { query = e.target.value.trim().toLowerC
 $("searchForm").addEventListener("submit", (e) => { e.preventDefault(); searchNews($("q").value); });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !$("notifPop").hidden) { closeNotifs(); $("bellBtn").focus(); return; }
+  if (e.key === "Escape" && !$("acctPop").hidden) { closeAcct(); $("acctBtn").focus(); return; }
+  if (view === "home" || document.querySelector("dialog[open]")) return;
   if (e.key === "Escape" && document.activeElement === $("q")) { $("q").value = ""; query = ""; render(); $("q").blur(); return; }
   if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "") || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === "/") { e.preventDefault(); $("q").focus(); }
@@ -1254,7 +1778,23 @@ $("footVer").textContent = "Heads Up version " + APP_VERSION;
     };
     setTimeout(checkVersion, 15 * 1000);
     setInterval(checkVersion, 4 * 60 * 1000);
-    render();
+    setInterval(loadAnnouncements, 10 * 60 * 1000);
+    // Accounts: pick up a saved sign-in, otherwise start on the homepage (unless they chose to skip accounts).
+    accountsOn = true;
+    try { isOwner = (await api("/api/admin")).owner === true; }
+    catch (e) { if (e.status === 404) accountsOn = false; }   // a helper from before version 9 is still running
+    let start = store.get("headsup.guest", false) ? "feed" : "home";
+    if (!accountsOn) { start = "feed"; showNotice("Heads Up just updated. Close this window and open Heads Up again to turn on accounts."); }
+    else if (token) {
+      try {
+        account = (await api("/api/account/me")).user;
+        if (Object.keys(account.settings || {}).length) applySettings(account.settings);
+        start = "feed";
+      }
+      catch (e) { if (e.status === 401) { token = null; store.remove("headsup.token"); clearPersonal(); start = "home"; } }
+    }
+    $("locate").hidden = !!place || start === "home";
+    showView(start);
   }
   if (!mode) { showNotice(errorCopy({ code: window.claude ? "server_not_connected" : "no_mode" })); return; }
   const oldest = Math.min(...sources().map((s) => cache[s.id]?.fetchedAt || 0));

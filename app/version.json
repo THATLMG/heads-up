@@ -1,5 +1,5 @@
 {
-  "version": 8,
-  "notes": "New: a breaking news bar, a notification bell and patch notes.",
+  "version": 9,
+  "notes": "New: accounts, a homepage, and customize your news.",
   "files": ["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]
 }
