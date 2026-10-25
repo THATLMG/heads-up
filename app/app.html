@@ -68,6 +68,65 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
   -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); min-width: 0; }
 .eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
+/* Top bar */
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.brand { display: flex; gap: 10px; align-items: center; font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: -0.02em; }
+.brand svg { width: 30px; height: 30px; flex: none; }
+.top-actions { display: flex; gap: 8px; align-items: center; position: relative; }
+.iconbtn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--glass-hi); display: grid; place-items: center; cursor: pointer; position: relative; padding: 0; box-shadow: var(--shadow); }
+.iconbtn:hover, .iconbtn[aria-expanded="true"] { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.iconbtn svg { width: 19px; height: 19px; }
+.badge { position: absolute; top: -4px; right: -4px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: var(--c-politics); color: #fff;
+  font: 600 11px/19px var(--mono); text-align: center; box-shadow: 0 0 0 2px var(--bg); }
+.notif-pop { position: absolute; right: 0; top: calc(100% + 10px); z-index: 30; width: min(390px, calc(100vw - 32px)); max-height: min(560px, 72vh); overflow: auto; background: var(--glass-hi);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4); backdrop-filter: blur(24px) saturate(1.4); }
+.notif-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px 12px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--glass-hi); z-index: 1; }
+.notif-head h2 { margin: 0; font-family: var(--display); font-size: 17px; letter-spacing: -0.015em; }
+.notif-sec { padding: 10px 16px 4px; }
+.notif { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; padding: 11px 16px; border-bottom: 1px solid var(--line); align-items: start; text-decoration: none; color: inherit; }
+.notif:last-child { border-bottom: 0; }
+button.notif { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; text-align: left; cursor: pointer; font: inherit; }
+.notif:hover { background: color-mix(in srgb, var(--c) 7%, transparent); }
+.notif .dot { margin-top: 6px; grid-row: span 2; }
+.notif.unread { background: color-mix(in srgb, var(--c) 9%, transparent); }
+.notif .t { font-weight: 700; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+.notif .s { font-size: 12.5px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+.notif-empty { padding: 14px 16px; color: var(--muted); font-size: 13.5px; }
+@media (max-width: 480px) { .btn .lbl { display: none; } }
+
+/* Breaking news */
+.breaking { --c: var(--c-politics); display: flex; align-items: center; gap: 14px; padding: 10px 10px 10px 12px; border-radius: 16px; min-width: 0;
+  background: color-mix(in srgb, var(--c) 11%, var(--glass)); border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.breaking.latest { --c: var(--c-news); }
+.breaking .label { flex: none; display: inline-flex; align-items: center; gap: 7px; background: var(--c); color: #fff; font: 600 11px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; }
+:root[data-theme="dark"] .breaking .label { color: #0a0c13; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .breaking .label { color: #0a0c13; } }
+.breaking .label i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+@media (prefers-reduced-motion: no-preference) { .breaking:not(.latest) .label i { animation: beat 1.4s ease-in-out infinite; } @keyframes beat { 50% { opacity: 0.25; } } }
+.breaking .story { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.breaking .story a { font-weight: 700; font-size: 15px; text-decoration: none; overflow-wrap: anywhere; }
+.breaking .story a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.breaking .story span { font: 12px var(--mono); color: var(--muted); }
+.breaking .nav { flex: none; display: flex; align-items: center; gap: 4px; font: 11px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.breaking .nav button { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--glass-hi); display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--ink); }
+.breaking .nav svg { width: 13px; height: 13px; }
+@media (max-width: 560px) { .breaking { flex-wrap: wrap; } .breaking .story { flex-basis: 100%; order: 3; } .breaking .nav { margin-left: auto; } }
+
+/* Patch notes */
+dialog.notes { border: 1px solid var(--line); padding: 0; border-radius: 22px; width: min(640px, calc(100vw - 32px)); max-height: min(760px, 86vh); background: var(--bg); color: var(--ink); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); }
+dialog.notes::backdrop { background: rgba(8, 10, 18, 0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.notes-head { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 22px 14px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.notes-head h2 { margin: 0; font-family: var(--display); font-size: 22px; letter-spacing: -0.02em; }
+.notes-head p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.release { padding: 18px 22px; border-bottom: 1px solid var(--line); display: grid; gap: 8px; }
+.release:last-child { border-bottom: 0; }
+.release-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.release h3 { margin: 0; font-family: var(--display); font-size: 17px; letter-spacing: -0.015em; }
+.release .ver { font: 500 12px var(--mono); color: var(--faint); }
+.release ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
+.release ul b { color: var(--ink); font-weight: 600; }
+
 /* Hero */
 .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 18px; align-items: stretch; }
 @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } }
@@ -230,7 +289,29 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 </style>
 
 <div class="glows" aria-hidden="true"></div>
+<dialog class="notes" id="notesDlg" aria-labelledby="notesTitle"></dialog>
 <div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f7cf6"/><stop offset="0.55" stop-color="#b23fd1"/><stop offset="1" stop-color="#f08a4b"/></linearGradient></defs>
+        <rect x="8" y="8" width="240" height="240" rx="60" fill="url(#lg)"/><rect x="58" y="62" width="140" height="18" rx="9" fill="#fff"/><rect x="58" y="100" width="104" height="14" rx="7" fill="#fff" opacity=".75"/><rect x="58" y="130" width="122" height="14" rx="7" fill="#fff" opacity=".75"/><rect x="58" y="160" width="86" height="14" rx="7" fill="#fff" opacity=".75"/><circle cx="186" cy="178" r="22" fill="#fff"/><circle cx="186" cy="178" r="9" fill="#df3f5d"/></svg>
+      Heads Up
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="notesBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>
+        <span class="lbl">Patch notes</span>
+      </button>
+      <button class="iconbtn" id="bellBtn" type="button" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></svg>
+        <span class="badge" id="bellBadge" hidden></span>
+      </button>
+      <div class="card notif-pop" id="notifPop" role="dialog" aria-label="Notifications" hidden></div>
+    </div>
+  </header>
+
+  <section class="breaking" id="breaking" aria-label="Breaking news" hidden></section>
+
   <section class="hero">
     <div class="hello">
       <div class="eyebrow" id="today"></div>
@@ -307,7 +388,32 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 </div>
 
 <script>
-const APP_VERSION = 7;   // keep in step with app/version.json in the GitHub repo
+const APP_VERSION = 8;   // keep in step with app/version.json in the GitHub repo
+// Newest first. Add an entry here with every release; it feeds the patch notes and the bell.
+const CHANGELOG = [
+  { v: 8, date: "2026-10-25", title: "Breaking news, notifications and patch notes", notes: [
+    "<b>Breaking news bar</b> at the top shows stories from the last 3 hours, and rotates through them.",
+    "<b>Notification bell</b> with an unread count for app updates, breaking news, new CS2 patches, Claude news and unread email.",
+    "<b>Patch notes</b> button that shows every update to Heads Up." ] },
+  { v: 7, date: "2026-10-25", title: "Version number", notes: [
+    "The version number now shows at the bottom of the page." ] },
+  { v: 6, date: "2026-10-25", title: "Automatic updates", notes: [
+    "<b>Heads Up updates itself</b> from GitHub and shows a banner with a Reload link when a new version is ready.",
+    "<b>Draggable tab bar</b>: drag, scroll or use the arrows when the window is too narrow to show every tab." ] },
+  { v: 4, date: "2026-10-25", title: "Desktop app and news search", notes: [
+    "<b>Desktop app</b> with its own window and a Start menu and Desktop shortcut.",
+    "<b>News search</b>: press Enter in the search bar for the last week of news on anything, then follow it as a topic.",
+    "<b>Keyboard shortcuts</b>: / search, R refresh, Esc clear, 1–9 switch tabs.",
+    "Headlines you've opened turn grey, and CS esports falls back to a second source when HLTV blocks it." ] },
+  { v: 3, date: "2026-10-25", title: "Local news and the 3-day summary", notes: [
+    "<b>Local news</b> and local weather for your town.",
+    "<b>Summary of the last 3 days</b>, written by Claude." ] },
+  { v: 2, date: "2026-10-25", title: "New look", notes: [
+    "Redesigned with frosted cards, a color for each section and light and dark themes.",
+    "Weather, CS esports from HLTV, Save for later, Explain, followed topics and section tabs." ] },
+  { v: 1, date: "2026-10-25", title: "First version", notes: [
+    "Top news, politics, social media, Claude news, CS2 updates and unread Gmail, with \"What matters today\"." ] },
+];
 const GN = (q) => "https://news.google.com/rss/search?q=" + encodeURIComponent(q) + "&hl=en-US&gl=US&ceid=US:en";
 const BUILTIN = [
   { id: "news", label: "Top news", url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en", kind: "gnews", fresh: 12 },
@@ -333,6 +439,9 @@ let cache = store.get("headsup.cache", {});
 let saved = store.get("headsup.saved", []);
 let topics = store.get("headsup.topics", []);
 let place = store.get("headsup.location", null);   // {name} once set, {skipped: true} after "Not now"
+let seenVersion = store.get("headsup.seenVersion", APP_VERSION - 1);   // newest release whose notes were seen
+let notifSeenAt = store.get("headsup.notifSeenAt", 0);                  // when the bell was last read
+let breakingIdx = 0, breakingHold = false;
 const prevVisit = store.get("headsup.lastVisit", 0);
 store.set("headsup.lastVisit", Date.now());
 
@@ -714,6 +823,126 @@ function renderTabs() {
   t.append(el("button", { class: "tab", type: "button", text: "+ Topic", onclick: openTopicForm }));
 }
 
+// ---------- breaking news ----------
+const BREAKING_H = 3;
+function breakingItems() {
+  const out = [], seen = new Set();
+  for (const id of ["news", "local", "politics"]) {
+    for (const it of cache[id]?.items || []) {
+      const t = ts(it.date), key = it.title.toLowerCase().slice(0, 60);
+      if (!t || Date.now() - t > BREAKING_H * 3600e3 || seen.has(key)) continue;
+      seen.add(key);
+      out.push({ ...it, t });
+    }
+  }
+  return out.sort((a, b) => b.t - a.t).slice(0, 6);
+}
+const ARROW = (d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"/></svg>';
+function renderBreaking() {
+  const box = $("breaking");
+  let items = breakingItems(), latest = false;
+  if (!items.length && cache.news?.items?.[0]) { items = [cache.news.items[0]]; latest = true; }
+  if (!items.length) { box.hidden = true; return; }
+  breakingIdx = ((breakingIdx % items.length) + items.length) % items.length;
+  const it = items[breakingIdx];
+  box.hidden = false;
+  box.classList.toggle("latest", latest);
+  box.replaceChildren(
+    el("span", { class: "label" }, el("i"), latest ? "Latest" : "Breaking"),
+    el("div", { class: "story" },
+      el("a", { href: it.link, target: "_blank", rel: "noopener", text: it.title }),
+      el("span", { text: [it.source, ago(ts(it.date))].filter(Boolean).join(" · ") })),
+    items.length > 1 ? el("div", { class: "nav" },
+      el("button", { type: "button", "aria-label": "Previous breaking story", html: ARROW("m15 6-6 6 6 6"), onclick: () => { breakingIdx--; renderBreaking(); } }),
+      el("span", { text: (breakingIdx + 1) + "/" + items.length }),
+      el("button", { type: "button", "aria-label": "Next breaking story", html: ARROW("m9 6 6 6-6 6"), onclick: () => { breakingIdx++; renderBreaking(); } })) : null);
+}
+// Rotate every 8 seconds, but hold still while the pointer or keyboard focus is on it.
+$("breaking").addEventListener("mouseenter", () => (breakingHold = true));
+$("breaking").addEventListener("mouseleave", () => (breakingHold = false));
+$("breaking").addEventListener("focusin", () => (breakingHold = true));
+$("breaking").addEventListener("focusout", () => (breakingHold = false));
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+  setInterval(() => { if (!breakingHold && !document.hidden && breakingItems().length > 1) { breakingIdx++; renderBreaking(); } }, 8000);
+
+// ---------- notifications and patch notes ----------
+function notifications() {
+  const app = CHANGELOG.filter((c) => c.v >= APP_VERSION - 2).map((c) => ({
+    kind: "app", c: "var(--accent)", title: "Heads Up " + c.v + ": " + c.title, sub: c.v === APP_VERSION ? "You're on this version" : "Earlier update",
+    when: new Date(c.date + "T12:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }), unread: c.v > seenVersion, v: c.v }));
+  const news = [];
+  for (const it of breakingItems())
+    news.push({ kind: "link", c: "var(--c-politics)", title: it.title, sub: "Breaking · " + (it.source || ""), t: it.t, link: it.link });
+  const S = Object.fromEntries(BUILTIN.map((s) => [s.id, s]));
+  const cs = cache.cs2?.items?.[0];
+  if (cs && recent(S.cs2, cs.date)) news.push({ kind: "link", c: "var(--c-cs2)", title: "New CS2 update: " + (cs.snippet ? cs.snippet.slice(0, 80) + "…" : cs.title), sub: "Valve · Steam", t: ts(cs.date), link: cs.link });
+  const cl = cache.claude?.items?.[0];
+  if (cl && Date.now() - ts(cl.date) < 48 * 3600e3) news.push({ kind: "link", c: "var(--c-claude)", title: cl.title, sub: "Claude & AI · " + (cl.source || ""), t: ts(cl.date), link: cl.link });
+  const mail = cache.email;
+  if (mail?.total && mail.items?.[0]) news.push({ kind: "link", c: "var(--c-email)", title: mail.total + " unread " + (mail.total === 1 ? "email" : "emails"),
+    sub: "Latest: " + mail.items[0].title, t: ts(mail.items[0].date) || mail.fetchedAt, link: "https://mail.google.com/" });
+  for (const n of news) { n.unread = n.t > notifSeenAt; n.when = ago(n.t); }
+  news.sort((a, b) => b.t - a.t);
+  return { app, news: news.slice(0, 12) };
+}
+function updateBell() {
+  const { app, news } = notifications();
+  const count = app.filter((n) => n.unread).length + news.filter((n) => n.unread).length;
+  const b = $("bellBadge");
+  b.hidden = !count;
+  b.textContent = count > 9 ? "9+" : String(count);
+  $("bellBtn").setAttribute("aria-label", count ? "Notifications, " + count + " unread" : "Notifications");
+  if (!$("notifPop").hidden) renderNotifPop();
+}
+function notifRow(n) {
+  const kids = [el("span", { class: "dot", style: "--c:" + n.c }), el("span", { class: "t", text: n.title }),
+    el("span", { class: "s" }, el("span", { text: n.sub }), n.when ? el("span", { text: n.when }) : null)];
+  const cls = "notif" + (n.unread ? " unread" : "");
+  return n.kind === "app"
+    ? el("button", { class: cls, type: "button", style: "--c:" + n.c, onclick: () => { closeNotifs(); openNotes(n.v); } }, ...kids)
+    : el("a", { class: cls, href: n.link, target: "_blank", rel: "noopener", style: "--c:" + n.c }, ...kids);
+}
+function renderNotifPop() {
+  const { app, news } = notifications();
+  $("notifPop").replaceChildren(
+    el("div", { class: "notif-head" }, el("h2", { text: "Notifications" }),
+      el("button", { class: "linkish", type: "button", text: "Mark all as read", onclick: () => { markRead(); renderNotifPop(); } })),
+    el("div", { class: "notif-sec eyebrow", text: "App updates" }),
+    ...app.map(notifRow),
+    el("div", { class: "notif-sec eyebrow", text: "News for you" }),
+    ...(news.length ? news.map(notifRow) : [el("div", { class: "notif-empty", text: "Nothing new right now. Breaking news, new CS2 patches, Claude news and unread email show up here." })]));
+}
+function markRead() {
+  seenVersion = APP_VERSION; notifSeenAt = Date.now();
+  store.set("headsup.seenVersion", seenVersion); store.set("headsup.notifSeenAt", notifSeenAt);
+  updateBell();
+}
+function openNotifs() { renderNotifPop(); $("notifPop").hidden = false; $("bellBtn").setAttribute("aria-expanded", "true"); }
+function closeNotifs() {
+  if ($("notifPop").hidden) return;
+  $("notifPop").hidden = true; $("bellBtn").setAttribute("aria-expanded", "false");
+  markRead();
+}
+$("bellBtn").onclick = () => ($("notifPop").hidden ? openNotifs() : closeNotifs());
+document.addEventListener("click", (e) => { if (!$("notifPop").hidden && !e.target.closest(".top-actions")) closeNotifs(); });
+
+function openNotes(focusV) {
+  const d = $("notesDlg");
+  d.replaceChildren(
+    el("div", { class: "notes-head" },
+      el("div", {}, el("h2", { id: "notesTitle", text: "Patch notes" }), el("p", { text: "Everything that's changed in Heads Up. You're on version " + APP_VERSION + "." })),
+      el("button", { class: "btn", type: "button", text: "Close", onclick: () => d.close() })),
+    ...CHANGELOG.map((c) => el("section", { class: "release", id: "rel-" + c.v },
+      el("div", { class: "release-top" }, el("h3", { text: c.title }), el("span", { class: "ver", text: "v" + c.v + " · " + new Date(c.date + "T12:00").toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" }) }),
+        c.v === APP_VERSION ? el("span", { class: "pill", text: "Current" }) : null),
+      el("ul", {}, ...c.notes.map((n) => el("li", { html: n }))))));
+  d.showModal();
+  if (focusV) d.querySelector("#rel-" + focusV)?.scrollIntoView({ block: "start" });
+  seenVersion = APP_VERSION; store.set("headsup.seenVersion", seenVersion); updateBell();
+}
+$("notesBtn").onclick = () => openNotes();
+$("notesDlg").addEventListener("click", (e) => { if (e.target === $("notesDlg")) $("notesDlg").close(); });
+
 // ---------- tab strip: drag, mouse wheel and arrows for when the window is too narrow ----------
 function updateTabArrows() {
   const t = $("tabs"), max = t.scrollWidth - t.clientWidth;
@@ -851,7 +1080,7 @@ $("locSkip").onclick = () => {
 };
 
 function render() {
-  renderHero(); renderNtk(); renderTabs();
+  renderHero(); renderNtk(); renderTabs(); renderBreaking(); updateBell();
   const m = $("main"), all = sources();
   if (!all.some((s) => s.id === tab) && tab !== "saved" && tab !== "all" && !(tab === "search" && searchRes)) tab = "all";
   let view;
@@ -990,6 +1219,7 @@ $("recapBtn").onclick = () => ask("recap");
 $("q").addEventListener("input", (e) => { query = e.target.value.trim().toLowerCase(); render(); });
 $("searchForm").addEventListener("submit", (e) => { e.preventDefault(); searchNews($("q").value); });
 document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !$("notifPop").hidden) { closeNotifs(); $("bellBtn").focus(); return; }
   if (e.key === "Escape" && document.activeElement === $("q")) { $("q").value = ""; query = ""; render(); $("q").blur(); return; }
   if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "") || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === "/") { e.preventDefault(); $("q").focus(); }

@@ -6,7 +6,7 @@ The installed app lives in `Documents\Heads Up`. It's a single page (`app/app.ht
 
 ## How updates work
 
-The helper checks `app/version.json` here when Heads Up opens and every 6 hours. If its `version` is higher than the installed one, it downloads every file in `files`, swaps them in, and the app shows a reload banner.
+The helper checks `app/version.json` here when Heads Up opens and every 30 minutes while it's open. If its `version` is higher than the installed one, it downloads every file in `files`, swaps them in, and the app shows a reload banner.
 
 ## Releasing a new version
 

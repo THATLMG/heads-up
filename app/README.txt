@@ -13,7 +13,7 @@ How it works
 - It needs Node.js, which is already installed on this PC.
 
 Updates
-- Heads Up updates itself. Each time it opens (and every 6 hours while open) the helper
+- Heads Up updates itself. Each time it opens (and every 30 minutes while open) the helper
   checks github.com/THATLMG/heads-up for a newer version, downloads it and swaps it in.
   When that happens the app shows "Heads Up has been updated" with a Reload link.
 - Your location, topics and saved stories are kept through updates.

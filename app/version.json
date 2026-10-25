@@ -1,5 +1,5 @@
 {
-  "version": 7,
-  "notes": "The version number now shows at the bottom of the page.",
+  "version": 8,
+  "notes": "New: a breaking news bar, a notification bell and patch notes.",
   "files": ["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]
 }

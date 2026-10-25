@@ -14,7 +14,8 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 // Updates: the files listed in app/version.json on GitHub replace the ones here when its version is higher.
 const UPDATE_BASE = process.env.HEADSUP_UPDATE_BASE || "https://raw.githubusercontent.com/THATLMG/heads-up/main/app/";
 const UPDATABLE = new Set(["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]);
-const UPDATE_EVERY_MS = 6 * 60 * 60 * 1000;
+const UPDATE_EVERY_MS = 30 * 60 * 1000;   // while the app is open (it asks /api/version every 4 minutes)
+let lastCheckAt = 0;
 
 // Same document wrapper the Claude artifact viewer puts around the page.
 const HEAD = '<!doctype html><html lang="en"><head><meta charset="utf-8">'
@@ -32,6 +33,7 @@ function localVersion() {
 }
 
 async function checkForUpdate() {
+  lastCheckAt = Date.now();
   try {
     const r = await fetch(UPDATE_BASE + "version.json?t=" + Date.now(), { signal: AbortSignal.timeout(15000), headers: { "Cache-Control": "no-cache" } });
     if (!r.ok) return;
@@ -88,6 +90,7 @@ const server = http.createServer((req, res) => {
   if (u.pathname === "/") return send(res, 200, "text/html; charset=utf-8", HEAD + fs.readFileSync(file("app.html"), "utf8") + "</body></html>");
   if (u.pathname === "/icon.png") return send(res, 200, "image/png", fs.readFileSync(file("icon.png")));
   if (u.pathname === "/api/ping") return send(res, 200, "text/plain", "heads-up ok");
+  if (u.pathname === "/api/version" && Date.now() - lastCheckAt > UPDATE_EVERY_MS) checkForUpdate();
   if (u.pathname === "/api/version") return send(res, 200, "application/json", JSON.stringify({ version: Number(localVersion().version) || 0, lastUpdate }));
   if (u.pathname === "/api/fetch") return void proxy(u.searchParams.get("url") || "", res);
   send(res, 404, "text/plain", "Not found");
@@ -100,6 +103,5 @@ server.on("error", (e) => {
 server.listen(PORT, HOST, () => {
   console.log("Heads Up is running at http://" + HOST + ":" + PORT);
   checkForUpdate();
-  setInterval(checkForUpdate, UPDATE_EVERY_MS);
 });
 setInterval(() => { if (Date.now() - lastHit > IDLE_EXIT_MS) process.exit(0); }, 60 * 1000);
