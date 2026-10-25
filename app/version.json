@@ -1,0 +1,5 @@
+{
+  "version": 6,
+  "notes": "Automatic updates from GitHub, and a draggable tab bar for small windows.",
+  "files": ["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]
+}

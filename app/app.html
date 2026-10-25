@@ -1,0 +1,1033 @@
+<title>Heads Up</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: greeting + weather hero, four "need to know" tiles, Claude's brief, a sticky tab bar, then feed panels (All) or one long list (a single tab). Frosted cards float over soft color glows, one hue per feed. */
+:root {
+  --bg: #eef0f7;
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-hi: rgba(255, 255, 255, 0.92);
+  --ink: #12141c;
+  --muted: #5d6377;
+  --faint: #8a90a3;
+  --line: rgba(18, 20, 28, 0.08);
+  --accent: #2f62f0;
+  --accent-ink: #ffffff;
+  --warn: #8a5600;
+  --warn-bg: rgba(250, 196, 70, 0.22);
+  --glow: 0.30;
+  --shadow: 0 1px 2px rgba(18, 20, 40, 0.05), 0 8px 28px rgba(18, 20, 40, 0.06);
+  --c-news: #2f7cf6; --c-politics: #df3f5d; --c-social: #b23fd1; --c-claude: #d4682f;
+  --c-cs2: #c98a00; --c-esports: #0e9583; --c-email: #2b9443; --c-topic: #6a5fd8; --c-saved: #c98a00; --c-local: #0a95b8;
+  --display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a0c13; --glass: rgba(24, 27, 40, 0.62); --glass-hi: rgba(30, 34, 50, 0.9);
+    --ink: #eef0f8; --muted: #a0a7bc; --faint: #737a90; --line: rgba(255, 255, 255, 0.08);
+    --accent: #7b9dff; --accent-ink: #0a0c13; --warn: #f6c860; --warn-bg: rgba(246, 200, 96, 0.12);
+    --glow: 0.22; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
+    --c-news: #6ea8ff; --c-politics: #ff7c93; --c-social: #df86f3; --c-claude: #f49c6b;
+    --c-cs2: #ffc94a; --c-esports: #40d6bf; --c-email: #6fdb82; --c-topic: #a89dff; --c-saved: #ffc94a; --c-local: #52d3f0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a0c13; --glass: rgba(24, 27, 40, 0.62); --glass-hi: rgba(30, 34, 50, 0.9);
+  --ink: #eef0f8; --muted: #a0a7bc; --faint: #737a90; --line: rgba(255, 255, 255, 0.08);
+  --accent: #7b9dff; --accent-ink: #0a0c13; --warn: #f6c860; --warn-bg: rgba(246, 200, 96, 0.12);
+  --glow: 0.22; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
+  --c-news: #6ea8ff; --c-politics: #ff7c93; --c-social: #df86f3; --c-claude: #f49c6b;
+  --c-cs2: #ffc94a; --c-esports: #40d6bf; --c-email: #6fdb82; --c-topic: #a89dff; --c-saved: #ffc94a; --c-local: #52d3f0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+  overflow-x: hidden;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.glows { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: var(--glow);
+  background:
+    radial-gradient(38vmax 30vmax at 8% 4%, var(--c-news), transparent 70%),
+    radial-gradient(32vmax 28vmax at 96% 10%, var(--c-social), transparent 70%),
+    radial-gradient(40vmax 30vmax at 80% 96%, var(--c-claude), transparent 70%),
+    radial-gradient(30vmax 26vmax at 6% 92%, var(--c-esports), transparent 70%);
+  filter: blur(40px);
+}
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 18px; }
+.card { background: var(--glass); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); min-width: 0; }
+.eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 18px; align-items: stretch; }
+@media (max-width: 760px) { .hero { grid-template-columns: 1fr; } }
+.hello { padding: 8px 4px; display: grid; gap: 10px; align-content: end; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.035em; margin: 0; text-wrap: balance; }
+h1 .hl { background: linear-gradient(100deg, var(--c-news), var(--c-social) 55%, var(--c-claude)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.sumline { margin: 0; color: var(--muted); font-size: 16px; max-width: 60ch; }
+.sumline b { color: var(--ink); font-weight: 700; }
+.weather { padding: 18px 20px; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: center; }
+.weather svg { width: 60px; height: 60px; grid-row: span 2; }
+.weather .temp { font-family: var(--display); font-size: 42px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.weather .desc { color: var(--muted); font-size: 14px; }
+.weather .row { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.weather.empty { grid-template-columns: 1fr; color: var(--muted); font-size: 14px; }
+.linkish { border: 0; background: none; padding: 0; font-weight: 600; font-size: 13px; color: var(--accent); cursor: pointer; }
+.linkish:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Location prompt */
+.locate { --c: var(--c-local); padding: 20px 22px; display: grid; gap: 14px; position: relative; overflow: hidden; }
+.locate::after { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: var(--c); opacity: 0.14; filter: blur(20px); pointer-events: none; }
+.locate h2 { margin: 0; font-family: var(--display); font-size: 21px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+.locate h2 svg { width: 22px; height: 22px; color: var(--c); flex: none; }
+.locate p { margin: 4px 0 0; color: var(--muted); font-size: 14px; max-width: 62ch; }
+.locate-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.locate-row input { flex: 1 1 240px; min-width: 0; border: 1px solid var(--line); background: var(--glass-hi); border-radius: 999px; padding: 9px 16px; font-size: 15px; }
+
+.notice { background: var(--warn-bg); color: var(--warn); border-radius: 14px; padding: 12px 16px; font-size: 14px; font-weight: 500; }
+
+/* Need to know */
+.ntk { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 1000px) { .ntk { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .ntk { grid-template-columns: 1fr; } }
+.tile { padding: 16px 18px; display: grid; gap: 8px; align-content: start; position: relative; overflow: hidden; }
+.tile::after { content: ""; position: absolute; inset: auto -30px -40px auto; width: 120px; height: 120px; border-radius: 50%; background: var(--c); opacity: 0.12; filter: blur(10px); pointer-events: none; }
+.tile-key { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tile-key button { background: none; border: 0; padding: 0; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.tile-key button:hover .eyebrow { color: var(--ink); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 20%, transparent); }
+.tile .big { font-family: var(--display); font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.tile .v { font-weight: 700; font-size: 15.5px; line-height: 1.35; overflow-wrap: anywhere; text-wrap: pretty; }
+.tile .v a { text-decoration: none; }
+.tile .v a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.tile .sub { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.pill { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 7px; border-radius: 999px;
+  background: color-mix(in srgb, var(--c, var(--accent)) 16%, transparent); color: var(--c, var(--accent)); white-space: nowrap; }
+
+/* Brief */
+.brief { padding: 18px 20px; display: grid; gap: 14px; }
+.brief-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+.brief-head h2 { margin: 0; font-family: var(--display); font-size: 20px; letter-spacing: -0.02em; }
+.brief-head p { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; }
+.brief ol { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; counter-reset: b; }
+.brief ol > li { counter-increment: b; background: var(--glass-hi); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; gap: 4px; }
+.brief ol > li::before { content: counter(b, decimal-leading-zero); font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.brief ol > li strong { font-weight: 700; line-height: 1.35; }
+.brief ol > li span { color: var(--muted); font-size: 13.5px; }
+.brief .msg { color: var(--muted); font-size: 14px; }
+.brief-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.brief h3 { margin: 0; font-family: var(--display); font-size: 17px; letter-spacing: -0.015em; }
+.recap { display: grid; gap: 14px; }
+.recap .overview { margin: 0; font-size: 16px; line-height: 1.6; max-width: 75ch; text-wrap: pretty; }
+.recap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.recap-sec { background: var(--glass-hi); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.recap-sec h4 { margin: 0; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.recap-sec p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.55; }
+.recap-sec ul { margin: 2px 0 0; padding-left: 18px; display: grid; gap: 3px; font-size: 13.5px; }
+.recap .note { font-size: 12px; color: var(--faint); }
+
+/* Buttons */
+.btn { border: 1px solid var(--line); background: var(--glass-hi); border-radius: 999px; padding: 8px 16px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; white-space: nowrap; }
+.btn:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:disabled { opacity: 0.6; cursor: default; }
+.btn svg { width: 16px; height: 16px; }
+@media (prefers-reduced-motion: no-preference) { .spin svg { animation: spin 0.9s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } } }
+
+/* Sticky bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; padding: 8px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; border-radius: 18px; }
+.tabs-wrap { position: relative; display: flex; flex: 1 1 420px; min-width: 0; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; padding: 2px; cursor: grab; user-select: none; -webkit-user-select: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs.dragging { cursor: grabbing; }
+.tabs.dragging .tab { pointer-events: none; }
+.tabs-wrap.more-left .tabs { -webkit-mask-image: linear-gradient(to right, transparent, #000 48px); mask-image: linear-gradient(to right, transparent, #000 48px); }
+.tabs-wrap.more-right .tabs { -webkit-mask-image: linear-gradient(to left, transparent, #000 48px); mask-image: linear-gradient(to left, transparent, #000 48px); }
+.tabs-wrap.more-left.more-right .tabs { -webkit-mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent); }
+.tab-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 1; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--glass-hi); box-shadow: var(--shadow); cursor: pointer; display: grid; place-items: center; padding: 0; color: var(--ink); }
+.tab-arrow svg { width: 14px; height: 14px; }
+.tab-arrow:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.tab-arrow.left { left: 0; }
+.tab-arrow.right { right: 0; }
+.tab { border: 0; background: none; border-radius: 999px; padding: 7px 13px; font-weight: 600; font-size: 14px; color: var(--muted); cursor: pointer; display: inline-flex; gap: 7px; align-items: center; white-space: nowrap; }
+.tab:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.tab[aria-selected="true"] .dot { box-shadow: none; }
+.tab .count { font-family: var(--mono); font-size: 11px; opacity: 0.75; }
+.tools { display: flex; gap: 8px; align-items: center; flex: 0 1 auto; flex-wrap: wrap; }
+.search { position: relative; }
+.search input { width: 200px; max-width: 100%; border: 1px solid var(--line); background: var(--glass-hi); border-radius: 999px; padding: 8px 14px 8px 34px; font-size: 14px; }
+.search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--faint); }
+@media (max-width: 560px) { .tools { flex: 1 1 100%; } .search { flex: 1; } .search input { width: 100%; } }
+.topic-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 16px; }
+.topic-form input { flex: 1 1 220px; min-width: 0; border: 1px solid var(--line); background: var(--glass-hi); border-radius: 999px; padding: 8px 14px; font-size: 14px; }
+.topic-form .hint { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
+
+/* Feeds */
+.grid { columns: 3 340px; column-gap: 16px; }
+.grid > .panel { break-inside: avoid; margin-bottom: 16px; display: block; }
+.panel { overflow: hidden; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px 12px 18px; border-bottom: 1px solid var(--line); }
+.panel-head .name { background: none; border: 0; padding: 0; display: inline-flex; align-items: center; gap: 10px; text-align: left; min-width: 0; }
+.panel-head button.name { cursor: pointer; }
+.panel-head button.name:disabled { cursor: default; }
+.panel-head .when .linkish { font-family: var(--body); text-decoration: none; }
+.panel-head h2 { margin: 0; font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: -0.015em; }
+.panel-head button.name:hover h2 { color: var(--c); }
+.panel-head .when { font-family: var(--mono); font-size: 11px; color: var(--faint); white-space: nowrap; display: inline-flex; gap: 8px; align-items: center; }
+.panel-head .x { border: 0; background: none; cursor: pointer; color: var(--faint); font-size: 18px; line-height: 1; padding: 0 2px; }
+.panel-head .x:hover { color: var(--ink); }
+.more { display: block; width: 100%; border: 0; border-top: 1px solid var(--line); background: none; padding: 10px; font-weight: 600; font-size: 13px; color: var(--c); cursor: pointer; }
+.more:hover { background: color-mix(in srgb, var(--c) 7%, transparent); }
+.list { list-style: none; margin: 0; padding: 0; }
+.single { max-width: 860px; width: 100%; margin: 0 auto; }
+.single .panel-head h2 { font-size: 22px; }
+.item { padding: 12px 16px 12px 18px; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
+.item:last-child { border-bottom: 0; }
+.item .title { font-weight: 600; text-decoration: none; overflow-wrap: anywhere; line-height: 1.4; text-wrap: pretty; }
+.item .title:hover { color: var(--c); }
+.item .title:visited { color: var(--faint); }
+.search-hint { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: var(--muted); }
+.search-hint b { color: var(--ink); }
+.search-hint a { font-weight: 600; font-size: 13px; color: var(--accent); text-decoration: none; }
+.search-hint a:hover { text-decoration: underline; text-underline-offset: 3px; }
+kbd { font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line); background: var(--glass-hi); color: var(--muted); }
+.single .item .title { font-size: 16.5px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12px; color: var(--faint); font-family: var(--mono); }
+.meta .src { color: var(--muted); }
+.snip { font-size: 13.5px; color: var(--muted); overflow-wrap: anywhere; }
+.acts { display: flex; gap: 6px; margin-top: 4px; }
+.act { border: 1px solid var(--line); background: none; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; display: inline-flex; gap: 5px; align-items: center; }
+.act svg { width: 13px; height: 13px; }
+.act:hover { color: var(--ink); border-color: color-mix(in srgb, var(--c) 45%, transparent); }
+.act[aria-pressed="true"] { color: var(--c-saved); border-color: color-mix(in srgb, var(--c-saved) 50%, transparent); }
+.act[aria-pressed="true"] svg { fill: currentColor; }
+@media (hover: hover) and (min-width: 700px) {
+  .grid .acts { opacity: 0; transition: opacity 0.15s; }
+  .grid .item:hover .acts, .grid .item:focus-within .acts, .grid .acts.on { opacity: 1; }
+}
+.explain { margin-top: 6px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--c) 9%, transparent); font-size: 14px; line-height: 1.55; }
+.explain small { display: block; margin-top: 6px; color: var(--faint); font-size: 11.5px; }
+.empty { padding: 18px; color: var(--muted); font-size: 14px; display: grid; gap: 12px; justify-items: start; }
+.err { margin: 12px 16px 0; padding: 10px 12px; border-radius: 10px; font-size: 13px; color: var(--warn); background: var(--warn-bg); }
+.skel { padding: 14px 18px; display: grid; gap: 14px; }
+.skel i { display: block; height: 12px; border-radius: 6px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.skel i:nth-child(2n) { width: 70%; }
+@media (prefers-reduced-motion: no-preference) { .skel i { animation: pulse 1.4s ease-in-out infinite; } @keyframes pulse { 50% { opacity: 0.45; } } }
+footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top: 8px; max-width: 70ch; margin: 0 auto; display: grid; gap: 8px; }
+@media (hover: none) { footer > div:first-child { display: none; } }
+</style>
+
+<div class="glows" aria-hidden="true"></div>
+<div class="wrap">
+  <section class="hero">
+    <div class="hello">
+      <div class="eyebrow" id="today"></div>
+      <h1 id="greet">Good <span class="hl">day</span></h1>
+      <p class="sumline" id="sumline">Your news, games and inbox in one place.</p>
+    </div>
+    <div class="card weather empty" id="weather">Weather shows up here after the first refresh.</div>
+  </section>
+
+  <div class="notice" id="notice" hidden></div>
+
+  <form class="card locate" id="locate" hidden>
+    <div>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Where are you?</h2>
+      <p>Tell Heads Up your town and it adds a local news section and your local weather. Type a city and state, or a ZIP code. It's saved only in this browser.</p>
+    </div>
+    <div class="locate-row">
+      <input id="locInput" type="text" maxlength="80" placeholder="City, State or ZIP code" autocomplete="off">
+      <button class="btn primary" type="submit">Save location</button>
+      <button class="btn" type="button" id="locGuess" hidden></button>
+      <button class="btn" type="button" id="locSkip">Not now</button>
+    </div>
+  </form>
+
+  <section class="ntk" id="ntk" aria-label="Need to know"></section>
+
+  <section class="card brief" id="brief" aria-live="polite">
+    <div class="brief-head">
+      <div>
+        <h2>Ask Claude</h2>
+        <p>Claude reads every headline on this page and sums it up for you.</p>
+      </div>
+      <div class="brief-btns">
+        <button class="btn" id="briefBtn" type="button">What matters today</button>
+        <button class="btn" id="recapBtn" type="button">Summary of the last 3 days</button>
+        <button class="btn" id="stopBtn" type="button" hidden>Stop</button>
+      </div>
+    </div>
+    <div id="briefBody" hidden></div>
+  </section>
+
+  <nav class="card bar" aria-label="Sections">
+    <div class="tabs-wrap" id="tabsWrap">
+      <button class="tab-arrow left" id="tabsLeft" type="button" aria-label="Show earlier tabs" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <button class="tab-arrow right" id="tabsRight" type="button" aria-label="Show more tabs" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+    </div>
+    <div class="tools">
+      <form class="search" id="searchForm" role="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search news" aria-label="Search news" autocomplete="off">
+      </form>
+      <button class="btn primary" id="refreshBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+        <span id="refreshLabel">Refresh</span>
+      </button>
+    </div>
+  </nav>
+
+  <form class="card topic-form" id="topicForm" hidden>
+    <input id="topicInput" type="text" maxlength="60" placeholder="Add a topic to follow, like Valorant, NBA or iPhone" autocomplete="off">
+    <button class="btn primary" type="submit">Follow</button>
+    <button class="btn" type="button" id="topicCancel">Cancel</button>
+    <span class="hint">Each topic gets its own tab with the last few days of headlines from Google News.</span>
+  </form>
+
+  <main id="main"></main>
+
+  <footer id="foot">
+    <div>Shortcuts: <kbd>/</kbd> search · <kbd>R</kbd> refresh · <kbd>Esc</kbd> clear search · <kbd>1</kbd>–<kbd>9</kbd> switch tabs</div>
+    <div id="footSrc">Headlines from Google News, patch notes from Steam, esports from HLTV, weather from wttr.in and email from your Gmail unread feed. Everything loads through the Claude app's built-in browser on your computer.</div>
+  </footer>
+</div>
+
+<script>
+const APP_VERSION = 6;   // keep in step with app/version.json in the GitHub repo
+const GN = (q) => "https://news.google.com/rss/search?q=" + encodeURIComponent(q) + "&hl=en-US&gl=US&ceid=US:en";
+const BUILTIN = [
+  { id: "news", label: "Top news", url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en", kind: "gnews", fresh: 12 },
+  { id: "politics", label: "Politics", url: GN("politics when:1d"), kind: "gnews", fresh: 12 },
+  { id: "social", label: "Social media", url: GN('(TikTok OR Instagram OR "social media" OR Threads OR Bluesky OR YouTube OR Snapchat OR Discord) when:2d'), kind: "gnews", fresh: 24 },
+  { id: "claude", label: "Claude & AI", url: GN('(Anthropic OR "Claude AI" OR "Claude Code" OR "Anthropic Claude") when:14d'), kind: "gnews", fresh: 72 },
+  { id: "cs2", label: "CS2 updates", url: "https://store.steampowered.com/feeds/news/app/730/?l=english", kind: "steam", fresh: 72 },
+  { id: "esports", label: "CS esports", url: "https://www.hltv.org/rss/news", kind: "rss", fresh: 24,
+    fallback: GN('(HLTV OR "Counter-Strike" esports OR CS2 tournament) when:3d') },
+  { id: "email", label: "Email", url: "https://mail.google.com/mail/feed/atom", kind: "gmail", fresh: 24 },
+];
+const weatherUrl = () => "https://wttr.in/" + (place?.name ? encodeURIComponent(place.name).replace(/%20/g, "+") : "") + "?format=j2";
+const localUrl = (name) => "https://news.google.com/rss/headlines/section/geo/" + encodeURIComponent(name) + "?hl=en-US&gl=US&ceid=US:en";
+const BROWSER = "host:claude_browser";
+const STALE_MS = 15 * 60 * 1000;
+const RESERVED = new Set(["settings", "sidebar", "customize", "upgrade", "downloads"]);
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+let cache = store.get("headsup.cache", {});
+let saved = store.get("headsup.saved", []);
+let topics = store.get("headsup.topics", []);
+let place = store.get("headsup.location", null);   // {name} once set, {skipped: true} after "Not now"
+const prevVisit = store.get("headsup.lastVisit", 0);
+store.set("headsup.lastVisit", Date.now());
+
+let tab = "all", query = "";
+let mcp = null, sample = null, tabId = null, busy = false, progress = null;
+let mode = null;        // "app": Claude desktop app's browser · "local": the downloaded Heads Up helper · null: can't load feeds
+let searchRes = null;   // {q, items, loading, error} for the news search tab
+const loading = new Set();
+const explains = {};   // link -> {text, status}
+const expanded = new Set();
+
+const $ = (id) => document.getElementById(id);
+const slug = (s) => "t-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+const localSource = () => place?.name
+  ? [{ id: "local", label: "Local · " + place.name.split(",")[0].trim(), url: localUrl(place.name), kind: "gnews", fresh: 24 }] : [];
+const sources = () => [BUILTIN[0], ...localSource(), ...BUILTIN.slice(1), ...topics.map((t) => ({ id: slug(t), label: t, url: GN(t + " when:3d"), kind: "gnews", fresh: 24, topic: true }))];
+const colorOf = (src) => src.topic ? "var(--c-topic)" : `var(--c-${src.id})`;
+
+// ---------- icons ----------
+const ICON = {
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>',
+};
+function weatherIcon(code, night) {
+  const sun = night
+    ? '<path d="M38 14a16 16 0 1 0 12 26A18 18 0 0 1 38 14z" fill="var(--c-topic)"/>'
+    : '<circle cx="30" cy="28" r="11" fill="var(--c-cs2)"/><g stroke="var(--c-cs2)" stroke-width="3" stroke-linecap="round"><path d="M30 8v5M30 43v5M10 28h5M45 28h5M16 14l3.5 3.5M40.5 38.5 44 42M44 14l-3.5 3.5M19.5 38.5 16 42"/></g>';
+  const cloud = '<path d="M20 50h26a10 10 0 0 0 0-20 14 14 0 0 0-27-2A11 11 0 0 0 20 50z" fill="var(--glass-hi)" stroke="var(--muted)" stroke-width="2.5"/>';
+  const rain = '<g stroke="var(--c-news)" stroke-width="3" stroke-linecap="round"><path d="M24 54l-2 6M34 54l-2 6M44 54l-2 6"/></g>';
+  const snow = '<g fill="var(--c-news)"><circle cx="24" cy="57" r="2.5"/><circle cx="34" cy="59" r="2.5"/><circle cx="44" cy="57" r="2.5"/></g>';
+  const bolt = '<path d="M36 50l-6 9h6l-4 7 10-11h-6l4-5z" fill="var(--c-cs2)"/>';
+  const snowCodes = [179, 182, 185, 227, 230, 281, 284, 311, 314, 317, 320, 323, 326, 329, 332, 335, 338, 350, 362, 365, 368, 371, 374, 377];
+  let body;
+  if (code === 113) body = sun;
+  else if (code === 116) body = sun + cloud;
+  else if ([119, 122, 143, 248, 260].includes(code)) body = cloud;
+  else if ([200, 386, 389, 392, 395].includes(code)) body = cloud + bolt;
+  else if (snowCodes.includes(code)) body = cloud + snow;
+  else body = cloud + rain;
+  return '<svg viewBox="0 0 64 66" aria-hidden="true">' + body + "</svg>";
+}
+
+// ---------- parsing ----------
+function decode(s) {
+  if (!s) return "";
+  s = s.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim();
+  const t = document.createElement("textarea");
+  t.innerHTML = s;
+  return t.value.trim();
+}
+const clean = (html) => decode(decode(html).replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+function grab(chunk, tag) {
+  const m = chunk.match(new RegExp("<" + tag + "(?:\\s[^>]*)?>([\\s\\S]*?)</" + tag + ">"));
+  return m ? m[1] : "";
+}
+function blocks(text, tag) {
+  const out = [], re = new RegExp("<" + tag + "(?:\\s[^>]*)?>([\\s\\S]*?)</" + tag + ">", "g");
+  let m;
+  while ((m = re.exec(text))) out.push(m[1]);
+  return out;
+}
+function parse(src, text) {
+  if (src.kind === "gmail") {
+    if (!/<feed[\s>]/.test(text)) return { signedOut: true, items: [] };
+    const items = blocks(text, "entry").map((e) => ({
+      title: clean(grab(e, "title")) || "(no subject)",
+      link: (e.match(/<link[^>]*href="([^"]+)"/) || [])[1]?.replace(/&amp;/g, "&") || "https://mail.google.com/",
+      source: clean(grab(grab(e, "author"), "name")) || clean(grab(grab(e, "author"), "email")),
+      snippet: clean(grab(e, "summary")),
+      date: clean(grab(e, "issued")) || clean(grab(e, "modified")),
+    }));
+    return { items, total: parseInt(clean(grab(text, "fullcount")), 10) || items.length };
+  }
+  if (!/<rss[\s>]/.test(text)) {
+    if (/Just a moment|cf-chl|challenge-platform|Verify you are human/i.test(text))
+      throw { code: "bot_check", message: new URL(src.url).hostname };
+    throw { code: "not_feed" };
+  }
+  const items = blocks(text, "item").map((it) => {
+    let title = clean(grab(it, "title"));
+    let source = clean(grab(it, "source"));
+    if (src.kind === "gnews" && source && title.endsWith(" - " + source)) title = title.slice(0, -(source.length + 3));
+    if (src.kind === "steam") source = "Valve · Steam";
+    if (src.kind === "rss") source = "HLTV";
+    const snippet = src.kind === "gnews" ? "" : clean(grab(it, "description")).replace(/\\([[\]])/g, "$1").slice(0, 200);
+    return { title, link: clean(grab(it, "link")) || clean(grab(it, "guid")), source, snippet, date: clean(grab(it, "pubDate")) };
+  }).filter((i) => i.title && /^https?:\/\//.test(i.link));
+  return { items: items.slice(0, src.kind === "steam" ? 8 : 20) };
+}
+function parseWeather(text) {
+  const body = text.slice(Math.max(0, text.indexOf("---")));
+  const j = JSON.parse(body.slice(body.indexOf("{"), body.lastIndexOf("}") + 1));
+  const cur = j.current_condition[0], area = j.nearest_area?.[0], day = j.weather?.[0];
+  return {
+    temp: cur.temp_F, feels: cur.FeelsLikeF, desc: (cur.weatherDesc?.[0]?.value || "").trim(), code: +cur.weatherCode,
+    hi: day?.maxtempF, lo: day?.mintempF, wind: cur.windspeedMiles, humidity: cur.humidity,
+    place: area ? [area.areaName?.[0]?.value, area.region?.[0]?.value].filter(Boolean).join(", ") : "",
+    sunset: day?.astronomy?.[0]?.sunset, fetchedAt: Date.now(),
+  };
+}
+
+// ---------- browser access ----------
+function textOf(r) {
+  if (typeof r?.payload === "string") return r.payload;
+  return (r?.content || []).filter((c) => c.type === "text").map((c) => c.text).join("\n");
+}
+const call = (tool, input) => mcp.callTool(BROWSER, tool, input, { cache: false });
+async function openPage(url) {
+  if (tabId) {
+    try { await call("navigate", { url, tabId }); return; }
+    catch (e) { if (e?.code !== "tool_error") throw e; tabId = null; }
+  }
+  const r = await call("preview_start", { url });
+  tabId = r?.payload?.tabId || (textOf(r).match(/"tabId"\s*:\s*"([^"]+)"/) || [])[1] || null;
+}
+// The app's browser has one tab for us, so reads take turns.
+let chain = Promise.resolve();
+function exclusive(fn) { const p = chain.then(fn, fn); chain = p.catch(() => {}); return p; }
+async function readUrl(url) {
+  if (mode === "local") {
+    let r;
+    try { r = await fetch("/api/fetch?url=" + encodeURIComponent(url), { cache: "no-store" }); }
+    catch { throw { code: "helper_down" }; }
+    if (!r.ok) throw { code: "tool_error", message: (await r.text()).slice(0, 200) || "HTTP " + r.status };
+    return r.text();
+  }
+  return exclusive(async () => {
+    await openPage(url);
+    return textOf(await call("get_page_text", tabId ? { tabId, max_chars: 150000 } : { max_chars: 150000 }));
+  });
+}
+const FATAL = ["server_not_connected", "not_granted", "capability_disabled", "capability_removed", "cancelled", "not_in_manifest", "approval_required"];
+function errorCopy(e) {
+  switch (e?.code) {
+    case "server_not_connected": case "not_granted": case "capability_disabled": case "capability_removed":
+      return "Live feeds load only when this page is open in the Claude desktop app." + (Object.keys(cache).length ? " You're seeing what was saved last time." : "");
+    case "cancelled": case "not_in_manifest": case "approval_required":
+      return "Browser access wasn't allowed for this page. Allow it from the artifact's Permissions menu, then press Refresh.";
+    case "server_unavailable": return "The built-in browser didn't answer. Try Refresh again in a moment.";
+    case "helper_down": return "Heads Up's helper stopped running. Close this window and open Heads Up again from your desktop shortcut.";
+    case "no_mode": return "Open Heads Up from its desktop shortcut, or in the Claude desktop app, so it can load the news.";
+    case "tool_error": return "This page couldn't be read: " + (e.message || "unknown error");
+    case "bot_check": return e.message + " asked for a quick \"are you human\" check. Open " + e.message + " once in the Claude app's browser pane, then press Refresh.";
+    case "not_feed": return "This site sent back a normal web page instead of its news feed. Try Refresh again later.";
+    default: return "This feed didn't load. Try Refresh again.";
+  }
+}
+async function loadSource(src) {
+  loading.add(src.id); render();
+  try {
+    if (mode === "local" && src.kind === "gmail") { cache[src.id] = { localOnly: true, items: [], fetchedAt: Date.now() }; return; }
+    try {
+      if (mode === "local" && src.fallback) throw { code: "bot_check" };   // HLTV always blocks the helper
+      cache[src.id] = { ...parse(src, await readUrl(src.url)), fetchedAt: Date.now() };
+    } catch (e) {
+      if (!src.fallback || FATAL.includes(e?.code)) throw e;
+      cache[src.id] = { ...parse({ ...src, kind: "gnews", url: src.fallback }, await readUrl(src.fallback)), fetchedAt: Date.now() };
+    }
+  } catch (e) {
+    cache[src.id] = { ...(cache[src.id] || {}), error: errorCopy(e) };
+    if (FATAL.includes(e?.code)) throw e;
+  } finally {
+    loading.delete(src.id);
+    store.set("headsup.cache", cache);
+  }
+}
+async function loadWeather() {
+  try { cache.weather = parseWeather(await readUrl(weatherUrl())); }
+  catch (e) { if (FATAL.includes(e?.code)) throw e; }
+  store.set("headsup.cache", cache);
+}
+let queued = null;   // a refresh asked for while another was running
+async function refresh(list = sources(), withWeather = true) {
+  if (busy) {
+    const ids = new Set((queued?.list || []).map((s) => s.id));
+    queued = { list: [...(queued?.list || []), ...list.filter((s) => !ids.has(s.id))], withWeather: queued?.withWeather || withWeather };
+    return;
+  }
+  if (!mode) { showNotice(errorCopy({ code: window.claude ? "server_not_connected" : "no_mode" })); return; }
+  busy = true; progress = { done: 0, total: list.length + (withWeather ? 1 : 0) };
+  render();
+  try {
+    if (withWeather) { await loadWeather(); progress.done++; render(); }
+    for (const src of list) { await loadSource(src); progress.done++; render(); }
+    hideNotice();
+  } catch (e) {
+    showNotice(errorCopy(e));
+  } finally {
+    busy = false; progress = null; render();
+    if (queued) { const q = queued; queued = null; refresh(q.list, q.withWeather); }
+  }
+}
+
+// ---------- helpers ----------
+function ago(ts) {
+  if (!ts) return "";
+  const m = Math.round((Date.now() - ts) / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return m + "m ago";
+  const h = Math.round(m / 60);
+  if (h < 24) return h + "h ago";
+  const d = Math.round(h / 24);
+  return d < 30 ? d + "d ago" : new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+const ts = (date) => { const t = Date.parse(date); return isNaN(t) ? 0 : t; };
+const recent = (src, date) => ts(date) && Date.now() - ts(date) < src.fresh * 3600e3;
+const sinceVisit = (date) => prevVisit && ts(date) > prevVisit;
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "class") n.className = v;
+    else if (k === "text") n.textContent = v;
+    else if (k === "html") n.innerHTML = v;
+    else if (k === "style") n.style.cssText = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kids) if (c != null && c !== false) n.append(c);
+  return n;
+}
+const matches = (it) => !query || (it.title + " " + (it.source || "") + " " + (it.snippet || "")).toLowerCase().includes(query);
+const isSaved = (link) => saved.some((s) => s.link === link);
+function toggleSave(it, src) {
+  if (isSaved(it.link)) saved = saved.filter((s) => s.link !== it.link);
+  else saved = [{ title: it.title, link: it.link, source: it.source, date: it.date, from: src.id, savedAt: Date.now() }, ...saved].slice(0, 200);
+  store.set("headsup.saved", saved);
+  render();
+}
+function setTab(t) {
+  tab = t;
+  try { history.replaceState(null, "", t === "all" ? location.pathname + location.search : "#" + t); } catch {}
+  render();
+  const btn = document.querySelector('.tab[aria-selected="true"]');
+  btn?.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
+// ---------- explain a headline ----------
+async function explain(it, src) {
+  const key = it.link;
+  if (explains[key]?.status === "busy") return;
+  if (!sample) { explains[key] = { status: "done", text: "Explanations need this page open in the Claude app or on claude.ai." }; render(); return; }
+  explains[key] = { status: "busy", text: "Thinking…" }; render();
+  try {
+    await sample(
+      "Explain this news headline to a busy reader in 2 or 3 short, plain sentences: what happened, and why it matters. " +
+      "You only have the headline, so if you don't know the specifics, say what it most likely refers to and keep it short. No preamble.\n\n" +
+      "Headline: " + it.title + "\nSource: " + (it.source || "unknown") + "\nPublished: " + (it.date || "unknown") +
+      (it.snippet ? "\nExcerpt: " + it.snippet : ""),
+      { modelTier: "quick", cache: { gcTime: 3600e3 }, onText: ({ text }) => { explains[key] = { status: "busy", text }; paintExplain(key); } });
+    explains[key].status = "done";
+  } catch (e) {
+    explains[key] = { status: "done", text: e?.code === "not_granted" ? "Claude isn't allowed on this page." : e?.code === "rate_limited" ? "You've hit a usage limit. Try again later." : "Couldn't explain this one right now." };
+  }
+  paintExplain(key);
+}
+function paintExplain(key) {
+  const box = document.querySelector('[data-explain="' + CSS.escape(key) + '"]');
+  if (!box) return render();
+  box.hidden = false;
+  box.firstChild.textContent = explains[key].text;
+}
+
+// ---------- rendering ----------
+function itemRow(it, src) {
+  const c = colorOf(src), ex = explains[it.link], on = isSaved(it.link);
+  return el("li", { class: "item", style: "--c:" + c },
+    el("a", { class: "title", href: it.link, target: "_blank", rel: "noopener", text: it.title }),
+    el("div", { class: "meta" },
+      sinceVisit(it.date) ? el("span", { class: "pill", text: "New" }) : null,
+      it.source ? el("span", { class: "src", text: it.source }) : null,
+      it.date ? el("span", { text: ago(ts(it.date)) }) : null),
+    it.snippet ? el("div", { class: "snip", text: it.snippet }) : null,
+    el("div", { class: "acts" + (on || ex ? " on" : "") },
+      el("button", { class: "act", type: "button", "aria-pressed": String(on), html: ICON.star + "<span>" + (on ? "Saved" : "Save") + "</span>", onclick: () => toggleSave(it, src) }),
+      src.id === "email" || (!sample && mode === "local") ? null : el("button", { class: "act", type: "button", html: ICON.spark + "<span>Explain</span>", onclick: () => explain(it, src) })),
+    el("div", { class: "explain", "data-explain": it.link, hidden: !ex }, ex?.text || "", el("small", { text: "Written by Claude from the headline. Open the story for the full details." })));
+}
+
+function panel(src, mode) {
+  const d = cache[src.id], c = colorOf(src);
+  const items = (d?.items || []).filter(matches);
+  const limit = mode === "single" || expanded.has(src.id) ? items.length : 5;
+  const head = el("div", { class: "panel-head" },
+    el("button", { class: "name", type: "button", onclick: () => setTab(src.id), disabled: mode === "single" },
+      el("span", { class: "dot" }), el("h2", { text: src.label })),
+    el("span", { class: "when" },
+      loading.has(src.id) ? "loading" : d?.fetchedAt ? ago(d.fetchedAt) : "",
+      src.topic ? el("button", { class: "x", type: "button", title: "Stop following " + src.label, "aria-label": "Stop following " + src.label, text: "×", onclick: () => removeTopic(src.label) }) : null));
+  const p = el("article", { class: "card panel" + (mode === "single" ? " single" : ""), style: "--c:" + c }, head);
+  if (d?.error) p.append(el("div", { class: "err", text: d.error }));
+
+  if (src.kind === "gmail" && d?.localOnly) {
+    p.append(el("div", { class: "empty" },
+      el("span", { text: "Email shows up in the Claude app version of Heads Up, which can use the Gmail you're signed in to there." }),
+      el("a", { class: "btn", href: "https://mail.google.com/", target: "_blank", rel: "noopener", text: "Open Gmail ↗" })));
+    return p;
+  }
+  if (src.kind === "gmail" && d?.signedOut) {
+    p.append(el("div", { class: "empty" },
+      el("span", { text: "Sign in to Gmail in the Claude app's built-in browser once, and your unread email shows up here." }),
+      el("button", { class: "btn", type: "button", text: "Open Gmail to sign in", onclick: openGmail })));
+    return p;
+  }
+  if (!items.length) {
+    if (loading.has(src.id) || (busy && !d)) p.append(el("div", { class: "skel" }, el("i"), el("i"), el("i"), el("i")));
+    else if (query && d?.items?.length) p.append(el("div", { class: "empty", text: "Nothing here matches “" + query + "”." }));
+    else if (!d?.error) p.append(el("div", { class: "empty", text: src.kind === "gmail" ? (d ? "No unread email. Nice." : "Your unread Gmail shows up here after a refresh.") : "Headlines show up here after a refresh." }));
+    return p;
+  }
+  p.append(el("ul", { class: "list" }, ...items.slice(0, limit).map((it) => itemRow(it, src))));
+  if (mode !== "single" && items.length > 5)
+    p.append(el("button", { class: "more", type: "button", text: expanded.has(src.id) ? "Show less" : "Show " + (items.length - 5) + " more",
+      onclick: () => { expanded.has(src.id) ? expanded.delete(src.id) : expanded.add(src.id); render(); } }));
+  return p;
+}
+
+function savedView() {
+  const items = saved.filter(matches);
+  const p = el("article", { class: "card panel single", style: "--c:var(--c-saved)" },
+    el("div", { class: "panel-head" }, el("span", { class: "name" }, el("span", { class: "dot" }), el("h2", { text: "Saved for later" })),
+      el("span", { class: "when", text: saved.length + " saved" })));
+  if (!items.length) {
+    p.append(el("div", { class: "empty", text: saved.length ? "Nothing saved matches “" + query + "”." : "Press Save on any headline and it waits for you here, even after the feeds move on." }));
+    return p;
+  }
+  const all = sources();
+  p.append(el("ul", { class: "list" }, ...items.map((it) => itemRow(it, all.find((s) => s.id === it.from) || { id: "saved", fresh: 0 }))));
+  return p;
+}
+
+function searchView() {
+  const r = searchRes, src = { id: "search", label: "Search", topic: true, fresh: 24 };
+  const p = el("article", { class: "card panel single", style: "--c:var(--c-topic)" },
+    el("div", { class: "panel-head" },
+      el("span", { class: "name" }, el("span", { class: "dot" }), el("h2", { text: "News about “" + r.q + "”" })),
+      el("span", { class: "when" },
+        el("a", { class: "linkish", href: "https://www.google.com/search?q=" + encodeURIComponent(r.q), target: "_blank", rel: "noopener", text: "Search the web ↗" }),
+        el("button", { class: "x", type: "button", title: "Close results", "aria-label": "Close results", text: "×", onclick: () => { searchRes = null; setTab("all"); } }))));
+  if (r.error) p.append(el("div", { class: "err", text: r.error }));
+  if (r.loading) p.append(el("div", { class: "skel" }, el("i"), el("i"), el("i"), el("i")));
+  else if (!r.items.length && !r.error) p.append(el("div", { class: "empty", text: "No news from the last week mentions that. Try fewer or different words." }));
+  else if (r.items.length) {
+    p.append(el("ul", { class: "list" }, ...r.items.map((it) => itemRow(it, src))));
+    p.append(el("div", { class: "empty" }, el("button", { class: "btn", type: "button", text: "Follow “" + r.q + "” as a topic", onclick: () => followTopic(r.q) })));
+  }
+  return p;
+}
+async function searchNews(q) {
+  q = q.trim();
+  if (!q) return;
+  searchRes = { q, items: [], loading: true };
+  $("q").value = ""; query = "";
+  setTab("search");
+  if (!mode) { searchRes = { q, items: [], error: errorCopy({ code: window.claude ? "server_not_connected" : "no_mode" }) }; render(); return; }
+  try {
+    const url = GN(q + " when:7d");
+    searchRes = { q, items: parse({ kind: "gnews", url }, await readUrl(url)).items };
+  } catch (e) {
+    searchRes = { q, items: [], error: errorCopy(e) };
+  }
+  render();
+}
+
+function renderTabs() {
+  const all = sources();
+  const t = $("tabs"), keep = t.scrollLeft;
+  t.replaceChildren();
+  queueMicrotask(() => { t.scrollLeft = keep; updateTabArrows(); });
+  const mk = (id, label, color, count) => el("button", { class: "tab", type: "button", role: "tab", "aria-selected": String(tab === id), onclick: () => setTab(id) },
+    color ? el("span", { class: "dot", style: "--c:" + color }) : null, label, count ? el("span", { class: "count", text: String(count) }) : null);
+  t.append(mk("all", "All"));
+  for (const s of all) {
+    const fresh = s.id === "email" ? cache.email?.total : (cache[s.id]?.items || []).filter((i) => sinceVisit(i.date)).length;
+    t.append(mk(s.id, s.label, colorOf(s), fresh || 0));
+  }
+  if (searchRes) t.append(mk("search", "Results: " + searchRes.q, "var(--c-topic)"));
+  t.append(mk("saved", "Saved", "var(--c-saved)", saved.length));
+  t.append(el("button", { class: "tab", type: "button", text: "+ Topic", onclick: openTopicForm }));
+}
+
+// ---------- tab strip: drag, mouse wheel and arrows for when the window is too narrow ----------
+function updateTabArrows() {
+  const t = $("tabs"), max = t.scrollWidth - t.clientWidth;
+  const left = t.scrollLeft > 2, right = t.scrollLeft < max - 2;
+  $("tabsWrap").classList.toggle("more-left", left);
+  $("tabsWrap").classList.toggle("more-right", right);
+  $("tabsLeft").hidden = !left;
+  $("tabsRight").hidden = !right;
+}
+(function setupTabStrip() {
+  const t = $("tabs");
+  const smooth = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  $("tabsLeft").onclick = () => t.scrollBy({ left: -t.clientWidth * 0.7, behavior: smooth });
+  $("tabsRight").onclick = () => t.scrollBy({ left: t.clientWidth * 0.7, behavior: smooth });
+  t.addEventListener("scroll", updateTabArrows, { passive: true });
+  window.addEventListener("resize", updateTabArrows);
+  // A vertical mouse wheel scrolls the strip sideways.
+  t.addEventListener("wheel", (e) => {
+    if (t.scrollWidth <= t.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    t.scrollLeft += e.deltaY;
+  }, { passive: false });
+  // Click and drag with the mouse (touch screens already swipe natively).
+  let drag = null, justDragged = false;
+  t.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0 || t.scrollWidth <= t.clientWidth) return;
+    drag = { x: e.clientX, left: t.scrollLeft, id: e.pointerId, moved: false };
+  });
+  t.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) < 6) return;
+    if (!drag.moved) { drag.moved = true; t.setPointerCapture(drag.id); t.classList.add("dragging"); }
+    t.scrollLeft = drag.left - dx;
+  });
+  const end = () => {
+    if (!drag) return;
+    if (drag.moved) { justDragged = true; setTimeout(() => (justDragged = false), 0); }
+    t.classList.remove("dragging");
+    drag = null;
+  };
+  t.addEventListener("pointerup", end);
+  t.addEventListener("pointercancel", end);
+  // Letting go after a drag shouldn't also switch tabs.
+  t.addEventListener("click", (e) => { if (justDragged) { e.stopPropagation(); e.preventDefault(); } }, true);
+})();
+
+function tile(src, key, value, sub, pill) {
+  return el("div", { class: "card tile", style: "--c:" + colorOf(src) },
+    el("div", { class: "tile-key" },
+      el("button", { type: "button", onclick: () => setTab(src.id) }, el("span", { class: "dot" }), el("span", { class: "eyebrow", text: key })),
+      pill ? el("span", { class: "pill", text: pill }) : null),
+    value, sub ? el("div", { class: "sub", text: sub }) : null);
+}
+function renderNtk() {
+  const n = $("ntk"); n.replaceChildren();
+  const S = Object.fromEntries(BUILTIN.map((s) => [s.id, s]));
+  const mail = cache.email;
+  if (mail?.localOnly) n.append(tile(S.email, "Email", el("div", { class: "v" }, el("a", { href: "https://mail.google.com/", target: "_blank", rel: "noopener", text: "Open Gmail ↗" })), "Unread counts show in the Claude app version"));
+  else if (mail?.signedOut) n.append(tile(S.email, "Email", el("div", { class: "v", text: "Sign in to see unread mail" }), "One-time sign-in in the Claude app's browser"));
+  else if (mail?.fetchedAt) n.append(tile(S.email, "Unread email", el("div", { class: "big", text: String(mail.total ?? 0) }),
+    mail.items?.[0] ? "Latest: " + mail.items[0].title + (mail.items[0].source ? " — " + mail.items[0].source : "") : "Inbox zero. Nice."));
+  else n.append(tile(S.email, "Email", el("div", { class: "v", text: "Not checked yet" }), "Press Refresh to check Gmail"));
+  for (const [id, label] of [["cs2", "Latest CS2 patch"], ["claude", "Latest on Claude"], ["news", "Top story"]]) {
+    const top = cache[id]?.items?.[0];
+    n.append(top
+      ? tile(S[id], label, el("div", { class: "v" }, el("a", { href: top.link, target: "_blank", rel: "noopener", text: top.title })),
+          [top.source, ago(ts(top.date))].filter(Boolean).join(" · "), recent(S[id], top.date) ? "Recent" : null)
+      : tile(S[id], label, el("div", { class: "v", text: "Not loaded yet" }), "Press Refresh to load"));
+  }
+}
+
+function renderHero() {
+  const h = new Date().getHours();
+  const part = h < 5 ? "Late night" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+  const [a, ...rest] = part.split(" ");
+  $("greet").replaceChildren(a + " ", el("span", { class: "hl", text: rest.join(" ") }));
+  $("today").textContent = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+
+  const all = sources().filter((s) => s.id !== "email");
+  const fresh = all.reduce((n, s) => n + (cache[s.id]?.items || []).filter((i) => sinceVisit(i.date)).length, 0);
+  const unread = cache.email?.total;
+  const loaded = all.some((s) => cache[s.id]?.fetchedAt);
+  const sl = $("sumline"); sl.replaceChildren();
+  if (busy && progress) sl.append("Catching you up… ", el("b", { text: progress.done + " of " + progress.total }), " feeds loaded.");
+  else if (!loaded) sl.append("Your news, games and inbox in one place. Press Refresh to load everything.");
+  else {
+    if (prevVisit) sl.append(el("b", { text: String(fresh) }), fresh === 1 ? " new headline since your last visit" : " new headlines since your last visit");
+    else sl.append("Here's what's happening right now");
+    if (unread != null && !cache.email?.signedOut) sl.append(" · ", el("b", { text: String(unread) }), " unread " + (unread === 1 ? "email" : "emails"));
+    sl.append(".");
+  }
+
+  const w = cache.weather, box = $("weather");
+  const change = el("button", { class: "linkish", type: "button", text: place?.name ? "Change" : "Set location", onclick: showLocate });
+  if (!w) { box.className = "card weather empty"; box.replaceChildren(el("span", { text: "Weather shows up here after the first refresh. " }), change); return; }
+  box.className = "card weather";
+  box.replaceChildren();
+  box.insertAdjacentHTML("afterbegin", weatherIcon(w.code, h < 6 || h >= 19));
+  box.append(el("div", { class: "temp", text: w.temp + "°" }),
+    el("div", { class: "desc", text: w.desc + (w.feels ? " · feels like " + w.feels + "°" : "") }),
+    el("div", { class: "row" },
+      el("span", {}, (place?.name || w.place || "Your area") + " · ", change),
+      el("span", { text: (w.hi ? "H " + w.hi + "°  L " + w.lo + "°" : "") + (w.wind ? "  · " + w.wind + " mph" : "") })));
+}
+
+// ---------- location ----------
+function showLocate() {
+  const f = $("locate");
+  f.hidden = false;
+  $("locInput").value = place?.name || "";
+  const guess = cache.weather?.place;
+  $("locGuess").hidden = !guess || guess === place?.name;
+  $("locGuess").textContent = "Use " + guess;
+  $("locSkip").textContent = place?.name ? "Cancel" : "Not now";
+  f.scrollIntoView({ block: "nearest" });
+  $("locInput").focus({ preventScroll: true });
+}
+function setPlace(name) {
+  name = name.trim().replace(/\s+/g, " ");
+  if (!name) return;
+  place = { name };
+  store.set("headsup.location", place);
+  delete cache.local; delete cache.weather;
+  store.set("headsup.cache", cache);
+  $("locate").hidden = true;
+  render();
+  refresh(localSource(), true);
+}
+$("locate").addEventListener("submit", (e) => { e.preventDefault(); setPlace($("locInput").value); });
+$("locGuess").onclick = () => setPlace(cache.weather?.place || "");
+$("locSkip").onclick = () => {
+  if (!place?.name) { place = { skipped: true }; store.set("headsup.location", place); }
+  $("locate").hidden = true;
+};
+
+function render() {
+  renderHero(); renderNtk(); renderTabs();
+  const m = $("main"), all = sources();
+  if (!all.some((s) => s.id === tab) && tab !== "saved" && tab !== "all" && !(tab === "search" && searchRes)) tab = "all";
+  let view;
+  if (tab === "search") view = searchView();
+  else if (tab === "saved") view = savedView();
+  else if (tab === "all") {
+    const panels = all.filter((s) => !query || (cache[s.id]?.items || []).some(matches)).map((s) => panel(s, "grid"));
+    view = panels.length ? el("div", { class: "grid" }, ...panels) : el("div", { class: "card empty", text: "No headlines match “" + query + "”." });
+  } else view = panel(all.find((s) => s.id === tab), "single");
+  const raw = $("q").value.trim();
+  const hint = raw && tab !== "search" ? el("div", { class: "card search-hint" },
+    el("span", {}, "Filtering headlines for ", el("b", { text: "“" + raw + "”" }), "."),
+    el("button", { class: "linkish", type: "button", text: "Search all news for “" + raw + "” (Enter)", onclick: () => searchNews(raw) }),
+    el("a", { href: "https://www.google.com/search?q=" + encodeURIComponent(raw), target: "_blank", rel: "noopener", text: "Search the web ↗" })) : null;
+  m.replaceChildren(...[hint, view].filter(Boolean));
+
+  const guess = cache.weather?.place, lg = $("locGuess");
+  if (!$("locate").hidden) { lg.hidden = !guess || guess === place?.name; lg.textContent = "Use " + guess; }
+
+  const btn = $("refreshBtn");
+  btn.disabled = busy;
+  btn.classList.toggle("spin", busy);
+  $("refreshLabel").textContent = busy && progress ? "Refreshing " + progress.done + "/" + progress.total : "Refresh";
+}
+function showNotice(t) { $("notice").textContent = t; $("notice").hidden = false; }
+function showUpdated(v) {
+  const n = $("notice");
+  n.replaceChildren(
+    el("span", { text: "Heads Up has been updated to version " + v.version + "." + (v.lastUpdate?.notes ? " " + v.lastUpdate.notes : "") + " " }),
+    el("button", { class: "linkish", type: "button", text: "Reload to see what's new", onclick: () => location.reload() }));
+  n.hidden = false;
+}
+function hideNotice() { $("notice").hidden = true; }
+
+// ---------- topics ----------
+function openTopicForm() { $("topicForm").hidden = false; $("topicInput").focus(); }
+$("topicCancel").onclick = () => { $("topicForm").hidden = true; $("topicInput").value = ""; };
+function followTopic(t) {
+  t = t.trim().replace(/\s+/g, " ");
+  if (!t || slug(t) === "t-") return;
+  if (!topics.some((x) => slug(x) === slug(t))) { topics.push(t); store.set("headsup.topics", topics); }
+  $("topicInput").value = ""; $("topicForm").hidden = true;
+  const src = sources().find((s) => s.id === slug(t));
+  setTab(src.id);
+  refresh([src], false);
+}
+$("topicForm").addEventListener("submit", (e) => { e.preventDefault(); followTopic($("topicInput").value); });
+function removeTopic(label) {
+  topics = topics.filter((x) => x !== label);
+  delete cache[slug(label)];
+  store.set("headsup.topics", topics); store.set("headsup.cache", cache);
+  if (tab === slug(label)) setTab("all"); else render();
+}
+async function openGmail() {
+  if (!mcp) return showNotice(errorCopy({ code: "server_not_connected" }));
+  try { await call("preview_start", { url: "https://mail.google.com/" }); showNotice("Gmail is open in the Claude app's browser pane. Sign in there, then press Refresh."); }
+  catch (e) { showNotice(errorCopy(e)); }
+}
+
+// ---------- ask Claude: today's brief and the 3-day summary ----------
+let askCtl = null;
+function headlineLines({ maxAgeH, perSource, includeEmail }) {
+  const lines = [];
+  let count = 0;
+  for (const src of sources()) {
+    if (src.id === "email" && !includeEmail) continue;
+    let items = cache[src.id]?.items || [];
+    if (maxAgeH) items = items.filter((i) => ts(i.date) && Date.now() - ts(i.date) < maxAgeH * 3600e3);
+    if (!items.length) continue;
+    lines.push("## " + src.label);
+    for (const it of items.slice(0, perSource)) {
+      lines.push("- " + it.title + (it.source ? " (" + it.source + ")" : "") + (it.date ? " [" + it.date + "]" : "") + (it.snippet && src.id !== "email" ? " — " + it.snippet.slice(0, 140) : ""));
+      count++;
+    }
+  }
+  return { text: lines.join("\n").slice(0, 80000), count };
+}
+async function ask(kind) {
+  const body = $("briefBody"); body.hidden = false;
+  if (!sample) { body.replaceChildren(el("div", { class: "msg", text: "This needs the page open in the Claude app or on claude.ai." })); return; }
+  const isRecap = kind === "recap";
+  const { text, count } = isRecap
+    ? headlineLines({ maxAgeH: 72, perSource: 15, includeEmail: false })
+    : headlineLines({ perSource: 10, includeEmail: true });
+  if (!count) { body.replaceChildren(el("div", { class: "msg", text: isRecap ? "There are no headlines from the last 3 days yet. Press Refresh first." : "Press Refresh first so there's something to read." })); return; }
+
+  const title = isRecap ? "The last 3 days" : "What matters today";
+  body.replaceChildren(el("h3", { text: title }), el("div", { class: "msg", text: "Claude is reading " + count + " headlines… this can take up to a minute." }));
+  $("briefBtn").disabled = $("recapBtn").disabled = true;
+  $("stopBtn").hidden = false;
+  askCtl = new AbortController();
+  const today = new Date().toDateString();
+  try {
+    if (isRecap) {
+      const out = await sample.json(
+        "Today is " + today + ". Write a recap of the news from the last 3 days for one person, using only the headlines below " +
+        "(top news, local news for " + (place?.name || "their area") + ", politics, social media, Claude/AI news, Counter-Strike 2 updates and esports, and topics they follow). " +
+        "Group related stories into 4 to 7 themes, biggest first. Write plainly for a busy reader, and don't invent details the headlines don't support. " +
+        'Reply with only a JSON object: {"overview": string (2-3 sentences on the biggest picture), "sections": [{"topic": string (2-5 words), "summary": string (2-3 sentences), "points": [string] (2-4 short key facts)}]}.\n\n' + text,
+        { modelTier: "default", signal: askCtl.signal, cache: { gcTime: 30 * 60e3 } });
+      const secs = (Array.isArray(out?.sections) ? out.sections : []).filter((s) => s && s.topic);
+      body.replaceChildren(el("div", { class: "recap" },
+        el("h3", { text: title }),
+        out?.overview ? el("p", { class: "overview", text: String(out.overview) }) : null,
+        el("div", { class: "recap-grid" }, ...secs.map((s) => el("div", { class: "recap-sec" },
+          el("h4", { text: String(s.topic) }),
+          s.summary ? el("p", { text: String(s.summary) }) : null,
+          Array.isArray(s.points) && s.points.length ? el("ul", {}, ...s.points.slice(0, 5).map((p) => el("li", { text: String(p) }))) : null))),
+        el("div", { class: "note", text: "Written by Claude from " + count + " headlines published in the last 3 days. Open the stories for full details." })));
+    } else {
+      const out = await sample.json(
+        "Today is " + today + ". Below are headlines, local news, Counter-Strike 2 patch notes and esports news, Claude/AI news, followed topics and unread email subjects for one person. " +
+        "Pick the 5 to 7 things they most need to know today: major world or political events, important local news, anything that changes how they use Claude or play CS2, big esports results, and emails that look personal, urgent or time-sensitive (skip promotions and newsletters). " +
+        'Reply with only a JSON array of {"headline": string, "why": string} objects. Keep headline under 12 words and why to one short plain sentence.\n\n' + text,
+        { modelTier: "default", signal: askCtl.signal });
+      const list = (Array.isArray(out) ? out : []).filter((r) => r && r.headline);
+      body.replaceChildren(el("h3", { text: title }), list.length
+        ? el("ol", {}, ...list.map((r) => el("li", {}, el("strong", { text: String(r.headline) }), el("span", { text: String(r.why || "") }))))
+        : el("div", { class: "msg", text: "Nothing stood out. Try again after the next refresh." }));
+    }
+  } catch (e) {
+    const msg = { cancelled: "Stopped.", not_granted: "Claude isn't allowed on this page.", rate_limited: "You've hit a usage limit. Try again later.", invalid_json: "Claude's answer came back garbled. Press the button to try again." }[e?.code]
+      || "Claude couldn't answer right now. Try again in a bit.";
+    body.replaceChildren(el("h3", { text: title }), el("div", { class: "msg", text: msg }));
+  } finally {
+    $("briefBtn").disabled = $("recapBtn").disabled = false;
+    $("stopBtn").hidden = true;
+  }
+}
+$("stopBtn").onclick = () => askCtl?.abort();
+
+// ---------- boot ----------
+$("refreshBtn").onclick = () => refresh();
+$("briefBtn").onclick = () => ask("brief");
+$("recapBtn").onclick = () => ask("recap");
+$("q").addEventListener("input", (e) => { query = e.target.value.trim().toLowerCase(); render(); });
+$("searchForm").addEventListener("submit", (e) => { e.preventDefault(); searchNews($("q").value); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.activeElement === $("q")) { $("q").value = ""; query = ""; render(); $("q").blur(); return; }
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "") || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "/") { e.preventDefault(); $("q").focus(); }
+  else if (e.key === "r" || e.key === "R") refresh();
+  else if (/^[1-9]$/.test(e.key)) {
+    const ids = ["all", ...sources().map((s) => s.id), ...(searchRes ? ["search"] : []), "saved"];
+    if (ids[+e.key - 1]) setTab(ids[+e.key - 1]);
+  }
+});
+const h0 = location.hash.slice(1);
+if (/^[A-Za-z0-9._~-]+$/.test(h0) && !RESERVED.has(h0)) tab = h0;
+render();
+if (!place) showLocate();
+
+(async () => {
+  const use = (n) => window.claude?.use ? window.claude.use(n).catch(() => null) : Promise.resolve(null);
+  [mcp, sample] = await Promise.all([use("mcp"), use("sample")]);
+  if (mcp) mode = "app";
+  else {
+    try { const r = await fetch("/api/ping", { cache: "no-store" }); if (r.ok && (await r.text()).includes("heads-up")) mode = "local"; } catch {}
+  }
+  if (mode === "local") {
+    $("brief").hidden = !sample;
+    $("footSrc").textContent = "Headlines from Google News, patch notes from Steam, esports from HLTV and weather from wttr.in, loaded by the Heads Up helper on your computer. Email and Claude's summaries are in the Claude app version.";
+    // Checking in keeps the helper running; it also says when it has installed a newer version.
+    const checkVersion = async () => {
+      try {
+        const v = await (await fetch("/api/version", { cache: "no-store" })).json();
+        if (v.version > APP_VERSION) showUpdated(v);
+      } catch {}
+    };
+    setTimeout(checkVersion, 15 * 1000);
+    setInterval(checkVersion, 4 * 60 * 1000);
+    render();
+  }
+  if (!mode) { showNotice(errorCopy({ code: window.claude ? "server_not_connected" : "no_mode" })); return; }
+  const oldest = Math.min(...sources().map((s) => cache[s.id]?.fetchedAt || 0));
+  if (Date.now() - oldest > STALE_MS) refresh();
+  setInterval(() => { if (document.visibilityState === "visible") refresh(); }, 30 * 60 * 1000);
+})();
+setInterval(() => { if (!busy) render(); }, 60 * 1000);
+</script>
