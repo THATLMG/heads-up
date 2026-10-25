@@ -1,5 +1,5 @@
 {
-  "version": 9,
-  "notes": "New: accounts, a homepage, and customize your news.",
+  "version": 10,
+  "notes": "Stories and searches now open in your default browser, and you can pick your search engine.",
   "files": ["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]
 }

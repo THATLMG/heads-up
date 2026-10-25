@@ -354,7 +354,7 @@ h1 .hl { background: linear-gradient(100deg, var(--c-news), var(--c-social) 55%,
 .item:last-child { border-bottom: 0; }
 .item .title { font-weight: 600; text-decoration: none; overflow-wrap: anywhere; line-height: 1.4; text-wrap: pretty; }
 .item .title:hover { color: var(--c); }
-.item .title:visited { color: var(--faint); }
+.item .title.read { color: var(--faint); }
 .search-hint { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: var(--muted); }
 .search-hint b { color: var(--ink); }
 .search-hint a { font-weight: 600; font-size: 13px; color: var(--accent); text-decoration: none; }
@@ -521,9 +521,20 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 </div>
 
 <script>
-const APP_VERSION = 9;   // keep in step with app/version.json in the GitHub repo
+const APP_VERSION = 10;   // keep in step with app/version.json in the GitHub repo
+const SEARCH_ENGINES = {
+  google: { name: "Google", url: "https://www.google.com/search?q=" },
+  bing: { name: "Bing", url: "https://www.bing.com/search?q=" },
+  duckduckgo: { name: "DuckDuckGo", url: "https://duckduckgo.com/?q=" },
+  brave: { name: "Brave Search", url: "https://search.brave.com/search?q=" },
+};
 // Newest first. Add an entry here with every release; it feeds the patch notes and the bell.
 const CHANGELOG = [
+  { v: 10, date: "2026-10-25", title: "Your browser, your search engine", notes: [
+    "Stories and web searches now open in <b>your computer's default browser</b> instead of always using Edge.",
+    "The Heads Up window opens in your default browser too: as its own app window in Chrome, Edge, Brave and Vivaldi, or as a tab in Firefox and others.",
+    "<b>Pick your search engine</b> in Customize: Google, Bing, DuckDuckGo or Brave Search.",
+    "Stories you've opened stay greyed out, wherever you opened them." ] },
   { v: 9, date: "2026-10-25", title: "Accounts, a homepage and your own news", notes: [
     "<b>Accounts</b>: create one with a username and password. It keeps your sections, topics, location and saved stories. Passwords are scrambled before they're saved on your computer.",
     "<b>Recovery codes</b> get you back in if you forget your password.",
@@ -585,6 +596,7 @@ const asList = (x) => (Array.isArray(x) ? x.map(String) : []);
 const normPrefs = (p = {}) => ({
   sections: { order: asList(p.sections?.order), hidden: asList(p.sections?.hidden) },
   breaking: p.breaking !== false,
+  search: SEARCH_ENGINES[p.search] ? p.search : "google",
   dismissed: asList(p.dismissed).slice(-50),   // announcement ids
 });
 let prefs = normPrefs(store.get("headsup.prefs", {}));
@@ -592,6 +604,8 @@ let account = null;                          // {username, ...} while signed in 
 let token = store.get("headsup.token", null);
 let view = "feed", isOwner = false, accountsOn = false;
 let announcements = store.get("headsup.announce", []);
+let opened = new Set(store.get("headsup.opened", []));   // stories this person has opened, to grey them out
+const webSearchUrl = (q) => SEARCH_ENGINES[prefs.search].url + encodeURIComponent(q);
 let seenVersion = store.get("headsup.seenVersion", APP_VERSION - 1);   // newest release whose notes were seen
 let notifSeenAt = store.get("headsup.notifSeenAt", 0);                  // when the bell was last read
 let breakingIdx = 0, breakingHold = false;
@@ -870,7 +884,7 @@ function paintExplain(key) {
 function itemRow(it, src) {
   const c = colorOf(src), ex = explains[it.link], on = isSaved(it.link);
   return el("li", { class: "item", style: "--c:" + c },
-    el("a", { class: "title", href: it.link, target: "_blank", rel: "noopener", text: it.title }),
+    el("a", { class: "title" + (opened.has(it.link) ? " read" : ""), href: it.link, target: "_blank", rel: "noopener", text: it.title }),
     el("div", { class: "meta" },
       sinceVisit(it.date) ? el("span", { class: "pill", text: "New" }) : null,
       it.source ? el("span", { class: "src", text: it.source }) : null,
@@ -940,7 +954,7 @@ function searchView() {
     el("div", { class: "panel-head" },
       el("span", { class: "name" }, el("span", { class: "dot" }), el("h2", { text: "News about “" + r.q + "”" })),
       el("span", { class: "when" },
-        el("a", { class: "linkish", href: "https://www.google.com/search?q=" + encodeURIComponent(r.q), target: "_blank", rel: "noopener", text: "Search the web ↗" }),
+        el("a", { class: "linkish", href: webSearchUrl(r.q), target: "_blank", rel: "noopener", text: "Search " + SEARCH_ENGINES[prefs.search].name + " ↗" }),
         el("button", { class: "x", type: "button", title: "Close results", "aria-label": "Close results", text: "×", onclick: () => { searchRes = null; setTab("all"); } }))));
   if (r.error) p.append(el("div", { class: "err", text: r.error }));
   if (r.loading) p.append(el("div", { class: "skel" }, el("i"), el("i"), el("i"), el("i")));
@@ -1371,6 +1385,10 @@ function openCustomize() {
       el("section", { class: "cz-sec" }, el("h3", { text: "Sections" }), el("p", { text: "Turn sections on or off and choose their order. Hidden sections aren't loaded at all." }), el("div", { class: "sec-list" }, ...rows)),
       el("section", { class: "cz-sec" }, el("h3", { text: "Topics you follow" }), el("p", { text: "Each topic gets its own section with the last few days of news." }), el("div", { class: "chips" }, ...chips), addForm),
       el("section", { class: "cz-sec" }, el("h3", { text: "Your location" }), el("p", { text: "For local news and weather." }), locForm),
+      el("section", { class: "cz-sec" }, el("h3", { text: "Web search" }), el("p", { text: "Used by \"Search the web\". Results open in your default browser." }),
+        el("div", { class: "chips", role: "radiogroup", "aria-label": "Search engine" }, ...Object.entries(SEARCH_ENGINES).map(([id, s]) =>
+          el("button", { class: "chip", type: "button", role: "radio", "aria-checked": String(prefs.search === id), "aria-pressed": String(prefs.search === id), text: s.name,
+            onclick: () => { prefs.search = id; savePrefs(); render(); openCustomize(); } })))),
       el("section", { class: "cz-sec" }, el("div", { class: "cz-line" }, el("span", { text: "Show the breaking news bar" }),
         el("label", { class: "switch" }, el("input", { type: "checkbox", checked: prefs.breaking, "aria-label": "Show the breaking news bar",
           onchange: (e) => { prefs.breaking = e.target.checked; savePrefs(); render(); } }), el("span")))),
@@ -1615,7 +1633,7 @@ function render() {
   const hint = raw && tab !== "search" ? el("div", { class: "card search-hint" },
     el("span", {}, "Filtering headlines for ", el("b", { text: "“" + raw + "”" }), "."),
     el("button", { class: "linkish", type: "button", text: "Search all news for “" + raw + "” (Enter)", onclick: () => searchNews(raw) }),
-    el("a", { href: "https://www.google.com/search?q=" + encodeURIComponent(raw), target: "_blank", rel: "noopener", text: "Search the web ↗" })) : null;
+    el("a", { href: webSearchUrl(raw), target: "_blank", rel: "noopener", text: "Search " + SEARCH_ENGINES[prefs.search].name + " ↗" })) : null;
   m.replaceChildren(...[hint, view].filter(Boolean));
 
   const guess = cache.weather?.place, lg = $("locGuess");
@@ -1733,6 +1751,21 @@ async function ask(kind) {
   }
 }
 $("stopBtn").onclick = () => askCtl?.abort();
+
+// ---------- opening links ----------
+// In the downloaded app, links go to the computer's default browser (the helper asks Windows to open
+// them) instead of whichever browser hosts the Heads Up window. Opened stories are remembered here.
+document.addEventListener("click", (e) => {
+  const a = e.target.closest?.("a[href]");
+  if (!a || !/^https?:\/\//.test(a.href) || a.origin === location.origin) return;
+  if (a.classList.contains("title")) {
+    opened.add(a.href); a.classList.add("read");
+    store.set("headsup.opened", [...opened].slice(-500));
+  }
+  if (mode !== "local" || e.button !== 0) return;
+  e.preventDefault();
+  api("/api/open", { url: a.href }).catch(() => window.open(a.href, "_blank", "noopener"));
+}, true);
 
 // ---------- boot ----------
 $("refreshBtn").onclick = () => refresh();

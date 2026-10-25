@@ -289,6 +289,18 @@ async function adminApi(req, res, route, body) {
   return json(res, 404, { error: "Not found" });
 }
 
+// ---------- opening links in the default browser ----------
+// Windows' own "open this address" handler, called directly (no command shell), so a link
+// can only ever open a web page.
+function openInDefaultBrowser(res, target) {
+  let url;
+  try { url = new URL(String(target)); } catch {}
+  if (!url || !/^https?:$/.test(url.protocol) || url.href.length > 2048) return json(res, 400, { error: "Only web addresses can be opened." });
+  if (process.env.HEADSUP_OPEN_LOG) fs.appendFileSync(process.env.HEADSUP_OPEN_LOG, url.href + "\n");   // tests
+  else execFile("rundll32.exe", ["url.dll,FileProtocolHandler", url.href], { windowsHide: true }, () => {});
+  return json(res, 200, { ok: true });
+}
+
 // ---------- http ----------
 function send(res, status, type, body) {
   res.writeHead(status, { "Content-Type": type, "Cache-Control": "no-store" });
@@ -332,6 +344,7 @@ const server = http.createServer(async (req, res) => {
     if (req.headers["x-heads-up"] !== "1" || (origin && !/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin))) return json(res, 403, { error: "Forbidden" });
     let body;
     try { body = await readJson(req); } catch { return json(res, 400, { error: "Bad request" }); }
+    if (u.pathname === "/api/open") return openInDefaultBrowser(res, body.url);
     const m = u.pathname.match(/^\/api\/(account|admin)\/([a-z]+)$/);
     if (!m) return json(res, 404, { error: "Not found" });
     try { return await (m[1] === "account" ? accountApi : adminApi)(req, res, m[2], body); }
