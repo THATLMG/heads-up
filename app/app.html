@@ -524,7 +524,7 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 </div>
 
 <script>
-const APP_VERSION = 11;   // keep in step with app/version.json in the GitHub repo
+const APP_VERSION = 12;   // keep in step with app/version.json in the GitHub repo
 const SEARCH_ENGINES = {
   google: { name: "Google", url: "https://www.google.com/search?q=" },
   bing: { name: "Bing", url: "https://www.bing.com/search?q=" },
@@ -533,6 +533,8 @@ const SEARCH_ENGINES = {
 };
 // Newest first. Add an entry here with every release; it feeds the patch notes and the bell.
 const CHANGELOG = [
+  { v: 12, date: "2026-10-25", title: "Smoother Customize", notes: [
+    "Customize keeps its place when you flip a switch or move a section, instead of jumping back to the top." ] },
   { v: 11, date: "2026-10-25", title: "Gmail, deals and better topics", notes: [
     "<b>Link Gmail</b> to your Heads Up account and see your unread email count and newest emails, right in the app. It uses a Google app password, which Heads Up encrypts on your computer, and it only reads your inbox. Unlink any time from Customize.",
     "<b>Deals</b>: new Tech deals, Laptop deals and Steam sales sections, with prices and how much is off. Hide any you don't want in Customize.",
@@ -1427,7 +1429,7 @@ const PRESETS = ["NBA", "NFL", "Soccer", "Formula 1", "Tech", "Gaming", "Valoran
 const savePrefs = () => store.set("headsup.prefs", prefs);
 function openCustomize() {
   const d = $("customDlg");
-  const scrollTop = d.querySelector(".cz-scroll")?.scrollTop || 0;
+  const scrollTop = d.scrollTop;   // the panel redraws after every change; keep its place
   const list = orderedSources(), hidden = new Set(prefs.sections.hidden), ids = list.map((s) => s.id);
   const move = (i, by) => { const order = ids.slice(); [order[i], order[i + by]] = [order[i + by], order[i]]; prefs.sections.order = order; savePrefs(); render(); openCustomize(); };
   const toggle = (s, on) => {
@@ -1494,7 +1496,7 @@ function openCustomize() {
           onchange: (e) => { prefs.breaking = e.target.checked; savePrefs(); render(); } }), el("span")))),
       accountSec));
   if (!d.open) d.showModal();
-  const sc = d.querySelector(".cz-scroll"); if (sc) sc.scrollTop = scrollTop;
+  d.scrollTop = scrollTop;
 }
 $("customBtn").onclick = () => openCustomize();
 for (const id of ["authDlg", "customDlg", "adminDlg", "gmailDlg"]) $(id).addEventListener("click", (e) => { if (e.target === $(id)) $(id).close(); });
