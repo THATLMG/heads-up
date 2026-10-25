@@ -1,5 +1,5 @@
 {
-  "version": 6,
-  "notes": "Automatic updates from GitHub, and a draggable tab bar for small windows.",
+  "version": 7,
+  "notes": "The version number now shows at the bottom of the page.",
   "files": ["app.html", "server.js", "Heads Up.vbs", "icon.png", "heads-up.ico", "README.txt"]
 }

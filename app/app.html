@@ -301,12 +301,13 @@ footer { font-size: 12.5px; color: var(--faint); text-align: center; padding-top
 
   <footer id="foot">
     <div>Shortcuts: <kbd>/</kbd> search · <kbd>R</kbd> refresh · <kbd>Esc</kbd> clear search · <kbd>1</kbd>–<kbd>9</kbd> switch tabs</div>
+    <div id="footVer"></div>
     <div id="footSrc">Headlines from Google News, patch notes from Steam, esports from HLTV, weather from wttr.in and email from your Gmail unread feed. Everything loads through the Claude app's built-in browser on your computer.</div>
   </footer>
 </div>
 
 <script>
-const APP_VERSION = 6;   // keep in step with app/version.json in the GitHub repo
+const APP_VERSION = 7;   // keep in step with app/version.json in the GitHub repo
 const GN = (q) => "https://news.google.com/rss/search?q=" + encodeURIComponent(q) + "&hl=en-US&gl=US&ceid=US:en";
 const BUILTIN = [
   { id: "news", label: "Top news", url: "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en", kind: "gnews", fresh: 12 },
@@ -1002,6 +1003,7 @@ const h0 = location.hash.slice(1);
 if (/^[A-Za-z0-9._~-]+$/.test(h0) && !RESERVED.has(h0)) tab = h0;
 render();
 if (!place) showLocate();
+$("footVer").textContent = "Heads Up version " + APP_VERSION;
 
 (async () => {
   const use = (n) => window.claude?.use ? window.claude.use(n).catch(() => null) : Promise.resolve(null);
